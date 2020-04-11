@@ -1,6 +1,7 @@
 # 2.4. Porovnávanie dát. Vyhľadávanie podobných objektov
 # Podobnosť dvojstavových premenných [0; 1]
 from enum import Enum
+from coincidence import Coincidence
 
 class Item:
 	def __init__(self, name: str, isTycinka: bool, isDezert: bool, isKolac: bool):
@@ -13,20 +14,6 @@ class Dezert(Enum):
 	Tycinka = 1
 	Dezert = 2
 	Kolac = 3
-
-# coincidencia alebo aj podobnost dvoch objektov
-class Coincidence:
-	@staticmethod
-	def Russel(positiveCoincidences: int, noObjects: int):
-		return positiveCoincidences / noObjects
-
-	@staticmethod
-	def Sokal(positiveCoincidences: int, negativeCoincidences: int, noObjects: int):
-		return (positiveCoincidences + negativeCoincidences) / noObjects
-
-	@staticmethod
-	def Jaccard(positiveCoincidences: int, negativeCoincidences: int, noObjects: int):
-		return positiveCoincidences / (noObjects - negativeCoincidences)
 
 table = [
 	Item('Cokolada', 1, 0, 1),
@@ -67,9 +54,9 @@ def PrintResults():
 		print(key + ': ' + str(value))
 
 	print(f'Podobnost({Dezert.Tycinka}, {Dezert.Dezert})')
-	print(f'Russel: {Coincidence.Russel(resuts["tycinkaAndDezert"], len(table))}')
-	print(f'Sokal: {Coincidence.Sokal(resuts["tycinkaAndDezert"], resuts["notTycinkaAndNotDezert"], len(table))}')
-	print(f'Jaccard: {Coincidence.Jaccard(resuts["tycinkaAndDezert"], resuts["notTycinkaAndNotDezert"], len(table))}')
+	print(f'Russel: {Coincidence.russel(resuts["tycinkaAndDezert"], len(table))}')
+	print(f'Sokal: {Coincidence.sokal(resuts["tycinkaAndDezert"], resuts["notTycinkaAndNotDezert"], len(table))}')
+	print(f'Jaccard: {Coincidence.jaccard(resuts["tycinkaAndDezert"], resuts["notTycinkaAndNotDezert"], len(table))}')
 
 # ULOHY
 # 1. Mame 2 objekty A a B, ktoré popísane 20 dvojstavovými atribútmi
@@ -95,8 +82,8 @@ def PrintResults1():
 		elif A[i] == B[i] and A[i] is False:
 			negative_coin += 1
    
-	print(f'Jaccard: {Coincidence.Jaccard(possitive_coin, negative_coin, len(A))}')
-	print(f'Russel: {Coincidence.Russel(possitive_coin, len(A))}')
-	print(f'Sokal: {Coincidence.Sokal(possitive_coin, negative_coin, len(A))}')
+	print(f'Jaccard: {Coincidence.jaccard(possitive_coin, negative_coin, len(A))}')
+	print(f'Russel: {Coincidence.russel(possitive_coin, len(A))}')
+	print(f'Sokal: {Coincidence.sokal(possitive_coin, negative_coin, len(A))}')
  
 PrintResults1()
