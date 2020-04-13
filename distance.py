@@ -2,7 +2,7 @@ import math
 import numpy
 
 class Distance:
-        
+
     @staticmethod
     def euclid(A: list, B: list):
         return math.sqrt(   # and get square root of inner sum

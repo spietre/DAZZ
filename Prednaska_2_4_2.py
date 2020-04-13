@@ -5,8 +5,6 @@
 from tabulate import tabulate
 from distance import Distance
 
-
-
 # INPUT
 teams = [[1,1],[2,1],[4,3],[4,5],[2,4]]
 
