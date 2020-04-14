@@ -3,7 +3,7 @@
 # Vzdialenosť (x,y) = 1 – Podobnosť (x,y)
 #            d(x,y) = 1 – s(x,y)
 from tabulate import tabulate
-from distance import Distance
+from Distance import Distance
 
 # INPUT
 teams = [[1,1],[2,1],[4,3],[4,5],[2,4]]

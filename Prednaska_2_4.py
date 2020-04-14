@@ -1,7 +1,7 @@
 # 2.4. Porovnávanie dát. Vyhľadávanie podobných objektov
 # Podobnosť dvojstavových premenných [0; 1]
 from enum import Enum
-from coincidence import Coincidence
+from Coincidence import Coincidence
 
 class Item:
 	def __init__(self, name: str, isTycinka: bool, isDezert: bool, isKolac: bool):
