@@ -29,7 +29,7 @@ def BayesClassification(data: list, header: list, new_data: list):
         print(data_vals[i])
         
     # {'no', 'non confirmed', 'confirmed'}
-    # {'high', 'medium', 'low'}  or  set()
+    # {'high', 'medium', 'low'}  <-- or -->  set()
     # {'yes', 'no'}
     # {'younger', 'elder'}
     # {'high', 'low'}
@@ -61,7 +61,7 @@ def BayesClassification(data: list, header: list, new_data: list):
         print(data_prep[i])
         
     # {'high': {'no': 0, 'non confirmed': 0, 'confirmed': 0}, 'low': {'no': 0, 'non confirmed': 0, 'confirmed': 0}}      
-    # {'high': {'high': 0, 'medium': 0, 'low': 0}, 'low': {'high': 0, 'medium': 0, 'low': 0}}  or  {'high': [], 'low': []}
+    # {'high': {'high': 0, 'medium': 0, 'low': 0}, 'low': {'high': 0, 'medium': 0, 'low': 0}}  <-- or -->  {'high': [], 'low': []}
     # {'high': {'yes': 0, 'no': 0}, 'low': {'yes': 0, 'no': 0}}
     # {'high': {'younger': 0, 'elder': 0}, 'low': {'younger': 0, 'elder': 0}}
     # {'high': 0, 'low': 0}
@@ -87,7 +87,7 @@ def BayesClassification(data: list, header: list, new_data: list):
         print(f'{header[i]}: {data_prep[header[i]]}')
 
     # Tumor: {'high': {'no': 0, 'non confirmed': 2, 'confirmed': 3}, 'low': {'no': 4, 'non confirmed': 3, 'confirmed': 2}}
-    # History: {'high': {'high': 2, 'medium': 2, 'low': 1}, 'low': {'high': 2, 'medium': 4, 'low': 3}}  or  History: {'high': [85, 80, 65, 72, 71], 'low': [83, 70, 68, 64, 69, 75, 75, 72, 81]}
+    # History: {'high': {'high': 2, 'medium': 2, 'low': 1}, 'low': {'high': 2, 'medium': 4, 'low': 3}}  <-- or -->  History: {'high': [85, 80, 65, 72, 71], 'low': [83, 70, 68, 64, 69, 75, 75, 72, 81]}
     # Heredity: {'high': {'yes': 4, 'no': 1}, 'low': {'yes': 3, 'no': 6}}
     # Age: {'high': {'younger': 2, 'elder': 3}, 'low': {'younger': 6, 'elder': 3}}
     # Cancer: {'high': 5, 'low': 9}
