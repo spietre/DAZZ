@@ -157,23 +157,29 @@ class Information:
     
 class Entropy:
     @staticmethod
-    def of(key_A, rows):
+    def of(key_A, rows, val_A = None):
         """ H(A) = Sum( P(A) * I(A) ) """
         values = dict()
         length = len(rows)
         
+        # compute occurences of each attribute value
         for row in rows:
             try:
                 values[row[key_A]] += 1
             except KeyError:
                 values[row[key_A]] = 1            
             
-        return sum([Entropy.personal_helper(val, length) for key, val in values.items()])
+        if val_A is None:
+            entropy = sum([Entropy.personal_helper(val, length) for key, val in values.items()])
+        else:
+            entropy = sum([Entropy.personal_helper(val, length) if val_A == key else 0 for key, val in values.items()])
+            
+        return entropy
     
     @staticmethod
-    def personal(key_A, rows):
+    def personal(key_A, rows, val_A = None):
         """ H(A) = Sum{ P(A) * I(A) } """
-        return Entropy.of(key_A, rows)
+        return Entropy.of(key_A, rows, val_A)
     
     @staticmethod
     def personal_helper(M, N):
@@ -182,7 +188,7 @@ class Entropy:
         return prob * Information.of(probability = prob)
             
     @staticmethod
-    def conjoint(key_A, key_B, rows):
+    def conjoint(key_A, key_B, rows, val_A = None, val_B = None):
         """ H(A,B) = Sum{ Sum[ P(A,B) * I(A,B) ] } """
         values = dict() #{ key_A : { key_B : dict() } }
         length = len(rows)
@@ -200,23 +206,25 @@ class Entropy:
         tmp_sum = .0
         
         for a_key, dict_of_b in values.items():
-            for b_key, occurrence in dict_of_b.items():
-                prob = Probability.of(M = occurrence, N = length)
-                tmp_sum += prob * Information.of(probability = prob)
-                
+            if val_A is None or val_A == a_key:
+                for b_key, occurrence in dict_of_b.items():
+                    if val_B is None or val_B == b_key:
+                        prob = Probability.of(M = occurrence, N = length)
+                        tmp_sum += prob * Information.of(probability = prob)
+            
         return tmp_sum
     
     @staticmethod
-    def conditional(key_A, key_B, rows):
+    def conditional(key_A, key_B, rows, val_A = None, val_B = None):
         """ 
         H(A|B) = H(A,B) – H(B) 
         OR
         H(A|B) = Sum{ Sum[ P(A,B) * I(A|B) ] }
         """
-        return Entropy.conjoint(key_A, key_B, rows) - Entropy.personal(key_B, rows)
+        return Entropy.conjoint(key_A, key_B, rows, val_A, val_B) - Entropy.personal(key_B, rows, val_B)
     
     @staticmethod
-    def mutual(key_A, key_B, rows):
+    def mutual(key_A, key_B, rows, val_A = None, val_B = None):
         """ 
         Stredné množstvo informácie o atribútu A v atribúte B
         I(A;B) = H(A) + H(B) - H(A,B) 
@@ -225,25 +233,90 @@ class Entropy:
         OR
         I(A;B) = Sum{ Sum[ P(A,B) * I(A;B) ] }
         """
-        return Entropy.personal(key_A, rows) + Entropy.personal(key_B, rows) - Entropy.conjoint(key_A, key_B, rows)
+        return Entropy.personal(key_A, rows, val_A) + Entropy.personal(key_B, rows, val_B) - Entropy.conjoint(key_A, key_B, rows, val_A, val_B)
     
+    @staticmethod
+    def stability(key_A, key_B, rows, val_A = None, val_B = None):
+        """
+        Coefficient of atribute connection stability, it determines which atribute contributes 
+        
+        """
+        return Entropy.mutual(key_B, key_A, rows, val_A, val_B) / Entropy.personal(key_A, rows, val_A)
+    
+header = ['Tumor',  'History',    'Heredity',   'Age',    'Cancer']
+# data = [
+#     #Tumor  #History    #Heredity   #Age    #Cancer
+#     ['confirmed',	85,	'yes',	'younger',	'high'],
+#     ['confirmed',	80,	'yes',	'elder',	'high'],
+#     ['no',	83,	'yes',	'younger',	'low'],
+#     ['non confirmed',	70,	'yes',	'younger',	'low'],
+#     ['non confirmed',	68,	'no',	'younger',	'low'],
+#     ['non confirmed',	65,	'no',	'elder',	'high'],
+#     ['no',	64,	'no',	'elder',	'low'],
+#     ['confirmed',	72,	'yes',	'younger',	'high'],
+#     ['confirmed',	69,	'no',	'younger',	'low'],
+#     ['non confirmed',	75,	'no',	'younger',	'low'],
+#     ['confirmed',	75,	'no',	'elder',	'low'],
+#     ['no',	72,	'yes',	'elder',	'low'],
+#     ['no',	81,	'no',	'younger',	'low'],
+#     ['non confirmed',	71,	'yes',	'elder',	'high']
+# ]
+
 data = [
     #Tumor  #History    #Heredity   #Age    #Cancer
-    ['confirmed',	85,	'yes',	'younger',	'high'],
-    ['confirmed',	80,	'yes',	'elder',	'high'],
-    ['no',	83,	'yes',	'younger',	'low'],
-    ['non confirmed',	70,	'yes',	'younger',	'low'],
-    ['non confirmed',	68,	'no',	'younger',	'low'],
-    ['non confirmed',	65,	'no',	'elder',	'high'],
-    ['no',	64,	'no',	'elder',	'low'],
-    ['confirmed',	72,	'yes',	'younger',	'high'],
-    ['confirmed',	69,	'no',	'younger',	'low'],
-    ['non confirmed',	75,	'no',	'younger',	'low'],
-    ['confirmed',	75,	'no',	'elder',	'low'],
-    ['no',	72,	'yes',	'elder',	'low'],
-    ['no',	81,	'no',	'younger',	'low'],
-    ['non confirmed',	71,	'yes',	'elder',	'high']
+    ['confirmed',	'high',	'yes',	'younger',	'high'],
+    ['confirmed',	'high',	'yes',	'elder',	'high'],
+    ['no',	'high',	'yes',	'younger',	'low'],
+    ['non confirmed',	'medium',	'yes',	'younger',	'low'],
+    ['non confirmed',	'low',	'no',	'younger',	'low'],
+    ['non confirmed',	'low',	'no',	'elder',	'high'],
+    ['no',	'low',	'no',	'elder',	'low'],
+    ['confirmed',	'medium',	'yes',	'younger',	'high'],
+    ['confirmed',	'low',	'no',	'younger',	'low'],
+    ['non confirmed',	'medium',	'no',	'younger',	'low'],
+    ['confirmed',	'medium',	'no',	'elder',	'low'],
+    ['no',	'medium',	'yes',	'elder',	'low'],
+    ['no',	'high',	'no',	'younger',	'low'],
+    ['non confirmed',	'medium',	'yes',	'elder',	'high']
 ]
 
-#print(Entropy.mutual(4, 0, data))
-# print(Entropy.personal(4, data))
+forms = '{:15s}{:10s}{:10s}{:10s}{:10s}{:10s}{:10s}'
+
+print(forms.format('Atribute A_i', 'H(Cancer)', 'H(A_i)', 'H(B,A_i)', 'I(B;A_i)', 'H(B|A_i)', 's(A_i,|B)'))
+
+cancer_idx = len(header) - 1
+# entropy of cancer
+cancEnt = Entropy.personal(cancer_idx, data)
+
+for col_idx in range(cancer_idx):
+    # what = ()
+    formf = "{:15s}{:1.4f}{:10.4f}{:10.4f}{:10.4f}{:10.4f}{:10.4f}"
+    print(formf.format(
+        header[col_idx],
+        cancEnt,
+        Entropy.personal(col_idx, data),
+        Entropy.conjoint(cancer_idx, col_idx, data),
+        Entropy.mutual(cancer_idx, col_idx, data),
+        Entropy.conditional(cancer_idx, col_idx, data),
+        Entropy.stability(col_idx, cancer_idx, data))
+    )
+    # print(formf % what)
+    
+
+print(forms.format('Atribute A_i', 'H(B|confirmed)', 'H(A_i|confirmed)', 'H(B,A_i,confirmed)', 'I(B;A_i|confirmed)', 'H(B|A_i)', 's(A_i,|B)'))    
+cancIfTumorConfirmed = Entropy.conditional(cancer_idx, 0, data, val_B='confirmed')
+
+for col_idx in range(1, cancer_idx):
+    # what = ()
+    formf = "{:15s}{:1.4f}{:10.4f}{:10.4f}{:10.4f}{:10.4f}{:10.4f}"
+    print(formf.format(
+        header[col_idx],
+        cancIfTumorConfirmed,
+        Entropy.conjoint(col_idx, 0, data, val_B='confirmed'),
+        Entropy.conjoint(cancer_idx, col_idx, data, ),
+        Entropy.mutual(cancer_idx, col_idx, data),
+        Entropy.conditional(cancer_idx, col_idx, data),
+        Entropy.stability(col_idx, cancer_idx, data))
+    )
+    # print(formf % what)
+    
