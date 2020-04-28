@@ -13,8 +13,8 @@ def BayesClassification(data: list, header: list, new_data: list):
     # index of attribute that we want to decide in the future
     cancer_col_idx = cols_num - 1
 
-    for row, row_data in enumerate(data):
-        for col, val in enumerate(row_data):
+    for row in data:
+        for col, val in enumerate(row):
             try:
                 if type(val) is str or type(val) is bool:
                     data_vals[col].add(val)

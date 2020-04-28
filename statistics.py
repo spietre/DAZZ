@@ -65,6 +65,23 @@ class Statistics:
                 X[i] = Statistics.normalize(x_old=X[i], x_min=x_min, x_max=x_max) * (b - a) + a
             return X
     
+    @staticmethod
+    def cardinality(rows: list, head):
+        sums = { i.value : dict() for i in head }
+        
+        for row in rows:
+            for col, col_list in enumerate(row):
+                for cell, val in enumerate(col_list):
+                    try:
+                        sums[col][cell] += val
+                    except KeyError:
+                        try:
+                            sums[col][cell] = val
+                        except KeyError:
+                            sums[col] = dict()
+                            sums[col][cell] = val
+        return sums
+    
     
 class Probability:
     @staticmethod        
@@ -113,47 +130,92 @@ class Information:
             probability = Probability.of(A, key_A, rows)
         
         return -math.log2(probability) if probability > 0 else 0
-        
-    @staticmethod
-    def personal(A = None, key_A = None, rows = None, probability: float = None):
-        """ 
-        Calculates same thing as 'of' method. The personal information of 'A' describes uncertainty of this value. 
-        I(A) = -log2( P(A) )
-        """
-        return Information.of(A=A, key_A=key_A, rows=rows, probability=probability)
     
-    @staticmethod
-    def conjoint(A = None, B = None, rows = None, key_A = None, key_B = None, probability: float = None):
-        """ 
-        Conjoint information of 'A' and 'B' describes common uncertainty of these two values. 
-        I(A,B) = -log2( P(A,B) )
-        """
-        if probability is None:
-            probability = Probability.conjoint(A, B, key_A, key_B, rows)
+    class Personal:
+        @staticmethod
+        def regular(A = None, key_A = None, rows = None, probability: float = None):
+            """ 
+            Calculates same thing as 'of' method. The personal information of 'A' describes uncertainty of this value. 
+            I(A) = -log2( P(A) )
+            """
+            return Information.of(A=A, key_A=key_A, rows=rows, probability=probability)
         
-        return -math.log2(probability) if probability > 0 else 0
+        @staticmethod
+        def fuzzy(A, key_A, rows: list, head = None, n = None):
+            if n is None:
+                if head is None:
+                    raise AttributeError
+                sums = Statistics.cardinality(rows, head)
+                n = sum([i for i in sums[A].values()])
+            
+            return math.log2(n) - math.log2(sum([row[A][key_A] for row in rows]))
     
-    @staticmethod
-    def conditional(A, B, key_A, key_B, rows):
-        """ 
-        Calculates and describes uncertainty of 'A' value if 'B' value is considered to be known.
-        I(A|B) = I(A,B) - I(B)
-        """
-        return Information.conjoint(A, B, key_A, key_B, rows) - Information.personal(A)
+    class Joint:
+        @staticmethod
+        def regular(A = None, B = None, rows = None, key_A = None, key_B = None, probability: float = None):
+            """ 
+            Conjoint information of 'A' and 'B' describes common uncertainty of these two values. 
+            I(A,B) = -log2( P(A,B) )
+            """
+            if probability is None:
+                probability = Probability.conjoint(A, B, key_A, key_B, rows)
+            
+            return -math.log2(probability) if probability > 0 else 0
     
-    @staticmethod
-    def mutual(A, B, key_A, key_B, rows):
-        """ Calculates information between 'A' and 'B' and describes dependency of 'A' on value of 'B' and vice versa. 
-        I(A;B) = I(A) - I(A|B) 
-        OR
-        I(A;B) = I(A) + I(B) - I(A,B) """
-        var1 = Information.personal(A, key_A, rows) - Information.conditional(B, A, key_B, key_A, rows)
-        var2 = Information.personal(A, key_A, rows) + Information.personal(B, key_B, rows) - Information.conjoint(A, B, key_A, key_B, rows)
+        @staticmethod
+        def fuzzy(A, key_A, B, key_B, rows: list, head = None, n = None):
+            if n is None:
+                if head is None:
+                    raise AttributeError
+                sums = Statistics.cardinality(rows, head)
+                n = sum([i for i in sums[A].values()])
+            
+            return math.log2(n) - math.log2(sum([row[A][key_A] * row[B][key_B] for row in rows]))
         
-        if (var1 != var2):
-            raise AssertionError
+    class Conditional:
+        @staticmethod
+        def regular(A, B, key_A, key_B, rows):
+            """ 
+            Calculates and describes uncertainty of 'A' value if 'B' value is considered to be known.
+            I(A|B) = I(A,B) - I(B)
+            """
+            return Information.Joint.regular(A, B, key_A, key_B, rows) - Information.Personal.regular(A)
+
+        @staticmethod
+        def fuzzy(A, key_A, B, key_B, rows: list, head = None, n = None):
+            if n is None:
+                if head is None:
+                    raise AttributeError
+                sums = Statistics.cardinality(rows, head)
+                n = sum([i for i in sums[A].values()])
+            
+            return Information.Joint.fuzzy(B, key_B, A, key_A, rows, n=n) - Information.Personal.fuzzy(B, key_B, rows, n=n)
+    
+    class Mutual:
+        @staticmethod
+        def regular(A, B, key_A, key_B, rows):
+            """ Calculates information between 'A' and 'B' and describes dependency of 'A' on value of 'B' and vice versa. 
+            I(A;B) = I(A) - I(A|B) 
+            OR
+            I(A;B) = I(A) + I(B) - I(A,B) """
+            var1 = Information.Personal.regular(A, key_A, rows) - Information.Conditional.regular(B, A, key_B, key_A, rows)
+            var2 = Information.Personal.regular(A, key_A, rows) + Information.Personal.regular(B, key_B, rows) - Information.Joint.regular(A, B, key_A, key_B, rows)
+            
+            if (var1 != var2):
+                raise AssertionError
+            
+            return var1   
         
-        return var1
+        @staticmethod
+        def fuzzy(A, key_A, B, key_B, rows: list, head = None, n = None):
+            if n is None:
+                if head is None:
+                    raise AttributeError
+                sums = Statistics.cardinality(rows, head)
+                n = sum([i for i in sums[A].values()])
+            
+            return Information.Personal.fuzzy(A, key_A, rows, n=n) - Information.Conditional.fuzzy(A, key_A, B, key_B, rows, n=n)
+            
     
 class Entropy:
     @staticmethod

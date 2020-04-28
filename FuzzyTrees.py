@@ -1,5 +1,6 @@
 from enum import Enum
-
+from Statistics import Statistics
+from Statistics import Information
 class Head(Enum):
     Tumor = 0
     History = 1
@@ -29,8 +30,8 @@ data = [
 
 sums = { i.value : dict() for i in Head }
 
-for row, row_list in enumerate(data):
-    for col, col_list in enumerate(row_list):
+for row in data:
+    for col, col_list in enumerate(row):
         for cell, val in enumerate(col_list):
             try:
                 sums[col][cell] += val
@@ -42,3 +43,10 @@ for row, row_list in enumerate(data):
                     sums[col][cell] = val
                     
 print(sums)
+
+print(Statistics.cardinality(data, Head))
+print(Information.Personal.fuzzy(Head.History.value, 0, data, head=Head))
+print(Information.Personal.fuzzy(Head.Cancer.value, 0, data, head=Head))
+print(Information.Joint.fuzzy(Head.Cancer.value, 0, Head.History.value, 0, data, head=Head))
+print(Information.Conditional.fuzzy(Head.Cancer.value, 0, Head.History.value, 0, data, head=Head))
+print(Information.Mutual.fuzzy(Head.Cancer.value, 0, Head.History.value, 0, data, head=Head))
