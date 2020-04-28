@@ -13,15 +13,15 @@ def BayesClassification(data: list, header: list, new_data: list):
     # index of attribute that we want to decide in the future
     cancer_col_idx = cols_num - 1
 
-    for cur_row in data:
-        for cur_col_idx in range(cols_num):
+    for row, row_data in enumerate(data):
+        for col, val in enumerate(row_data):
             try:
-                if type(cur_row[cur_col_idx]) is str or type(cur_row[cur_col_idx]) is bool:
-                    data_vals[cur_col_idx].add(cur_row[cur_col_idx])
+                if type(val) is str or type(val) is bool:
+                    data_vals[col].add(val)
                 else: 
                     continue
             except Exception:
-                print(f"{cur_row[cur_col_idx]} already in")
+                print(f"{val} already in")
 
     ###############OUTPUT###############
     print()
@@ -67,16 +67,16 @@ def BayesClassification(data: list, header: list, new_data: list):
     # {'high': 0, 'low': 0}
     ####################################
 
-    for cur_row in data:
-        for cur_col_idx in range(cols_num):
-            if cur_col_idx != cancer_col_idx:
+    for row, cur_row in enumerate(data):
+        for col, val in enumerate(cur_row):
+            if col != cancer_col_idx:
                 ## regular column handling (not the resulting one) ##
-                if type(cur_row[cur_col_idx]) is str or type(cur_row[cur_col_idx]) is bool:
+                if type(val) is str or type(val) is bool:
                     ## string columns value handling ##
-                    data_prep[header[cur_col_idx]][cur_row[cancer_col_idx]][cur_row[cur_col_idx]] += 1
+                    data_prep[header[col]][cur_row[cancer_col_idx]][val] += 1
                 else:
                     ## numeric columns value handling ##
-                    data_prep[header[cur_col_idx]][cur_row[cancer_col_idx]].append(cur_row[cur_col_idx])
+                    data_prep[header[col]][cur_row[cancer_col_idx]].append(val)
             else:
                 ## resulting 'cancer' column handling ##
                 data_prep[header[cancer_col_idx]][cur_row[cancer_col_idx]] += 1
@@ -98,18 +98,18 @@ def BayesClassification(data: list, header: list, new_data: list):
     tmp_results = dict.fromkeys([i for i in data_vals[cancer_col_idx]], 1.0)
 
     for cancer_val in data_vals[cancer_col_idx]:
-        for cur_col_idx in range(cols_num):
+        for col, val in enumerate(new_data):
             new_result = .0
-            if new_data[cur_col_idx] is not None:
+            if val is not None:
                 ## regular column handling (not the resulting one) ##
-                if type(new_data[cur_col_idx]) is str or type(new_data[cur_col_idx]) is bool:
+                if type(val) is str or type(val) is bool:
                     ## string columns value handling ##
                     #print(f'{header[cancer_col_idx]}:{cancer_val}|{header[cur_col_idx]}:{new_data[cur_col_idx]} = {data_prep[header[cur_col_idx]][cancer_val][new_data[cur_col_idx]] / sum([i for i in data_prep[header[cur_col_idx]][cancer_val].values()])}')
-                    new_result = data_prep[header[cur_col_idx]][cancer_val][new_data[cur_col_idx]] / sum([i for i in data_prep[header[cur_col_idx]][cancer_val].values()])
+                    new_result = data_prep[header[col]][cancer_val][val] / sum([i for i in data_prep[header[col]][cancer_val].values()])
                     tmp_results[cancer_val] = tmp_results[cancer_val] * new_result
                 else:
                     ## numeric columns value handling ##
-                    new_result = NormalDist(mu=stat.mean(data_prep[header[cur_col_idx]][cancer_val]), sigma=stat.std_deviation(data_prep[header[cur_col_idx]][cancer_val])).pdf(new_data[cur_col_idx])
+                    new_result = NormalDist(mu=stat.mean(data_prep[header[col]][cancer_val]), sigma=stat.std_deviation(data_prep[header[col]][cancer_val])).pdf(val)
                     tmp_results[cancer_val] = tmp_results[cancer_val] * new_result
             else:
                 ## resulting 'cancer' column handling ##
