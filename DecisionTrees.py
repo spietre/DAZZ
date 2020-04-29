@@ -43,7 +43,7 @@ print(forms.format('Atribute A_i', 'H(Cancer)', 'H(A_i)', 'H(B,A_i)', 'I(B;A_i)'
 
 cancer_idx = len(header) - 1
 # entropy of cancer
-cancEnt = Entropy.Personal.regular(cancer_idx, data)
+cancEnt = Entropy.Personal.bayes(cancer_idx, data)
 
 for col_idx in range(cancer_idx):
     # what = ()
@@ -51,17 +51,17 @@ for col_idx in range(cancer_idx):
     print(formf.format(
         header[col_idx],
         cancEnt,
-        Entropy.Personal.regular(col_idx, data),
-        Entropy.Joint.regular(cancer_idx, col_idx, data),
-        Entropy.mutual(cancer_idx, col_idx, data),
-        Entropy.conditional(cancer_idx, col_idx, data),
+        Entropy.Personal.bayes(col_idx, data),
+        Entropy.Joint.bayes(cancer_idx, col_idx, data),
+        Entropy.Mutual.bayes(cancer_idx, col_idx, data),
+        Entropy.Conditional.bayes(cancer_idx, col_idx, data),
         Entropy.stability(col_idx, cancer_idx, data))
     )
     # print(formf % what)
     
 
 print(forms.format('Atribute A_i', 'H(B|confirmed)', 'H(A_i|confirmed)', 'H(B,A_i,confirmed)', 'I(B;A_i|confirmed)', 'H(B|A_i)', 's(A_i,|B)'))    
-cancIfTumorConfirmed = Entropy.conditional(cancer_idx, 0, data, val_B='confirmed')
+cancIfTumorConfirmed = Entropy.Conditional.bayes(cancer_idx, 0, data, val_B='confirmed')
 
 for col_idx in range(1, cancer_idx):
     # what = ()
@@ -69,10 +69,10 @@ for col_idx in range(1, cancer_idx):
     print(formf.format(
         header[col_idx],
         cancIfTumorConfirmed,
-        Entropy.Joint.regular(col_idx, 0, data, val_B='confirmed'),
-        Entropy.Joint.regular(cancer_idx, col_idx, data, ),
-        Entropy.mutual(cancer_idx, col_idx, data),
-        Entropy.conditional(cancer_idx, col_idx, data),
+        Entropy.Joint.bayes(col_idx, 0, data, val_B='confirmed'),
+        Entropy.Joint.bayes(cancer_idx, col_idx, data, ),
+        Entropy.Mutual.bayes(cancer_idx, col_idx, data),
+        Entropy.Conditional.bayes(cancer_idx, col_idx, data),
         Entropy.stability(col_idx, cancer_idx, data))
     )
     # print(formf % what)

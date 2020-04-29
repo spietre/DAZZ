@@ -85,31 +85,30 @@ class Cardinality:
 
     @staticmethod
     def personal(A, rows: list, key_A = None):            
-        ret_sum = .0
+        cardinality = .0
         for row in rows:
-            # for col in row[A]:
             if key_A is not None:
-                ret_sum += row[A][key_A]
+                cardinality += row[A][key_A]
             else:
-                ret_sum += sum([val for val in row[A]])
+                cardinality += sum([val for val in row[A]])
         
-        return ret_sum
+        return cardinality
 
     @staticmethod
-    def cartesian(A, key_A, B, key_B, rows: list):
+    def joint(A, key_A, B, key_B, rows: list):
         return sum([row[A][key_A] * row[B][key_B] for row in rows])
 
 class Probability:
     @staticmethod        
     def of(A = None, key = None, rows = None, M = None, N = None):
         """ Calculates probability of an 'A' being inside 'rows' list. """
-        result = .0
+        probability = .0
         if rows is None or A is None or key is None:
-            result = M / N
+            probability = M / N
         else:
-            result = sum([row[key] == A for row in rows]) / len(rows)
+            probability = sum([row[key] == A for row in rows]) / len(rows)
         
-        return result
+        return probability
     
     @staticmethod
     def personal(A = None, key = None, rows = None, M = None, N = None):
@@ -149,7 +148,7 @@ class Information:
     
     class Personal:
         @staticmethod
-        def regular(A = None, key_A = None, rows = None, probability: float = None):
+        def bayes(A = None, key_A = None, rows = None, probability: float = None):
             """ 
             Calculates same thing as 'of' method. The personal information of 'A' describes uncertainty of this value. 
             I(A) = -log2( P(A) )
@@ -157,19 +156,12 @@ class Information:
             return Information.of(A=A, key_A=key_A, rows=rows, probability=probability)
         
         @staticmethod
-        def fuzzy(A, key_A, rows: list, head = None, n = None):
-            if n is None:
-                if head is None:
-                    raise AttributeError
-                sums = Cardinality.complete(rows, head)
-                n = sum([i for i in sums[A].values()])
-            
-            # return math.log2(n) - math.log2(sum([row[A][key_A] for row in rows]))
-            return math.log2(n) - math.log2(Cardinality.personal(A, rows, key_A))
+        def fuzzy(A, key_A, rows: list):
+            return math.log2(Cardinality.personal(A, rows)) - math.log2(Cardinality.personal(A, rows, key_A))
     
     class Joint:
         @staticmethod
-        def regular(A = None, B = None, rows = None, key_A = None, key_B = None, probability: float = None):
+        def bayes(A = None, B = None, rows = None, key_A = None, key_B = None, probability: float = None):
             """ 
             Conjoint information of 'A' and 'B' describes common uncertainty of these two values. 
             I(A,B) = -log2( P(A,B) )
@@ -180,61 +172,42 @@ class Information:
             return -math.log2(probability) if probability > 0 else 0
     
         @staticmethod
-        def fuzzy(A, key_A, B, key_B, rows: list, head = None, n = None):
-            if n is None:
-                if head is None:
-                    raise AttributeError
-                sums = Cardinality.complete(rows, head)
-                n = sum([i for i in sums[A].values()])
+        def fuzzy(A, key_A, B, key_B, rows: list):
+            n = Cardinality.personal(A, rows)
             
-            # return math.log2(n) - math.log2(sum([row[A][key_A] * row[B][key_B] for row in rows]))
-            return math.log2(n) - math.log2(Cardinality.cartesian(A, key_A, B, key_B, rows))
+            return math.log2(n) - math.log2(Cardinality.joint(A, key_A, B, key_B, rows))
         
     class Conditional:
         @staticmethod
-        def regular(A, B, key_A, key_B, rows):
+        def bayes(A, B, key_A, key_B, rows):
             """ 
             Calculates and describes uncertainty of 'A' value if 'B' value is considered to be known.
             I(A|B) = I(A,B) - I(B)
             """
-            return Information.Joint.regular(A, B, key_A, key_B, rows) - Information.Personal.regular(A)
+            return Information.Joint.bayes(A, B, key_A, key_B, rows) - Information.Personal.bayes(A)
 
         @staticmethod
-        def fuzzy(A, key_A, B, key_B, rows: list, head = None, n = None):
-            if n is None:
-                if head is None:
-                    raise AttributeError
-                # sums = Cardinality.complete(rows, head)
-                # n = sum([i for i in sums[A].values()])
-                n = Cardinality.personal(A, rows)
-            
-            return Information.Joint.fuzzy(B, key_B, A, key_A, rows, n=n) - Information.Personal.fuzzy(B, key_B, rows, n=n)
+        def fuzzy(A, key_A, B, key_B, rows: list):
+            return Information.Joint.fuzzy(B, key_B, A, key_A, rows) - Information.Personal.fuzzy(B, key_B, rows)
     
     class Mutual:
         @staticmethod
-        def regular(A, B, key_A, key_B, rows):
+        def bayes(A, B, key_A, key_B, rows):
             """ Calculates information between 'A' and 'B' and describes dependency of 'A' on value of 'B' and vice versa. 
             I(A;B) = I(A) - I(A|B) 
             OR
             I(A;B) = I(A) + I(B) - I(A,B) """
-            var1 = Information.Personal.regular(A, key_A, rows) - Information.Conditional.regular(B, A, key_B, key_A, rows)
-            var2 = Information.Personal.regular(A, key_A, rows) + Information.Personal.regular(B, key_B, rows) - Information.Joint.regular(A, B, key_A, key_B, rows)
+            inf1 = Information.Personal.bayes(A, key_A, rows) - Information.Conditional.bayes(B, A, key_B, key_A, rows)
+            inf2 = Information.Personal.bayes(A, key_A, rows) + Information.Personal.bayes(B, key_B, rows) - Information.Joint.bayes(A, B, key_A, key_B, rows)
             
-            if (var1 != var2):
+            if (inf1 != inf2):
                 raise AssertionError
             
-            return var1   
+            return inf1   
         
         @staticmethod
-        def fuzzy(A, key_A, B, key_B, rows: list, head = None, n = None):
-            if n is None:
-                if head is None:
-                    raise AttributeError
-                # sums = Cardinality.complete(rows, head)
-                # n = sum([i for i in sums[A].values()])
-                n = Cardinality.personal(A, rows)
-            
-            return Information.Personal.fuzzy(A, key_A, rows, n=n) - Information.Conditional.fuzzy(A, key_A, B, key_B, rows, n=n)
+        def fuzzy(A, key_A, B, key_B, rows: list):
+            return Information.Personal.fuzzy(A, key_A, rows) - Information.Conditional.fuzzy(A, key_A, B, key_B, rows)
             
     
 class Entropy:
@@ -260,7 +233,7 @@ class Entropy:
     
     class Personal:
         @staticmethod
-        def regular(key_A, rows, val_A = None):
+        def bayes(key_A, rows, val_A = None):
             """ H(A) = Sum{ P(A) * I(A) } """
             return Entropy.of(key_A, rows, val_A)
         
@@ -271,18 +244,16 @@ class Entropy:
             return prob * Information.of(probability = prob)
         
         @staticmethod
-        def fuzzy(A, rows: list, head):
-            sums_row = Cardinality.complete(rows, head)
-            ret_val = .0
+        def fuzzy(A, rows: list):
+            entropy = .0
+            for col in range(len(rows[0][A])):
+                entropy += Cardinality.personal(A, rows, col) * Information.Personal.fuzzy(A, col, rows)
             
-            for key, val in sums_row[A].items():
-                ret_val += val * Information.Personal.fuzzy(A, key, rows, head=head)
-            
-            return ret_val    
+            return entropy
 
     class Joint:                    
         @staticmethod
-        def regular(key_A, key_B, rows, val_A = None, val_B = None):
+        def bayes(key_A, key_B, rows, val_A = None, val_B = None):
             """ H(A,B) = Sum{ Sum[ P(A,B) * I(A,B) ] } """
             values = dict() #{ key_A : { key_B : dict() } }
             length = len(rows)
@@ -296,49 +267,70 @@ class Entropy:
                     except KeyError:
                         values[row[key_A]] = dict()
                         values[row[key_A]][row[key_B]] = 1
-
-            tmp_sum = .0
+            entropy = .0
             
             for a_key, dict_of_b in values.items():
                 if val_A is None or val_A == a_key:
                     for b_key, occurrence in dict_of_b.items():
                         if val_B is None or val_B == b_key:
                             prob = Probability.of(M = occurrence, N = length)
-                            tmp_sum += prob * Information.of(probability = prob)
+                            entropy += prob * Information.of(probability = prob)
                 
-            return tmp_sum
+            return entropy
 
         @staticmethod
-        def fuzzy(A, key_A, B, key_B, rows: list, head = None, n = None):
-           for row in rows:
-               ret_sum += Cardinality.cartesian(A, key_A, B, key_B, rows) * Information.Joint.fuzzy(A, key_A, B, key_B, rows, head, n)
+        def fuzzy(A, B, rows: list):
+            entropy = .0
+            for col_A in range(len(rows[0][A])):
+                for col_B in range(len(rows[0][B])):
+                    entropy += Cardinality.joint(A, col_A, B, col_B, rows) * Information.Joint.fuzzy(A, col_A, B, col_B, rows)
+
+            return entropy
         
-    @staticmethod
-    def conditional(key_A, key_B, rows, val_A = None, val_B = None):
-        """ 
-        H(A|B) = H(A,B) – H(B) 
-        OR
-        H(A|B) = Sum{ Sum[ P(A,B) * I(A|B) ] }
-        """
-        return Entropy.Joint.regular(key_A, key_B, rows, val_A, val_B) - Entropy.Personal.regular(key_B, rows, val_B)
+    class Conditional:
+        @staticmethod
+        def bayes(key_A, key_B, rows, val_A = None, val_B = None):
+            """ 
+            H(A|B) = H(A,B) – H(B) 
+            OR
+            H(A|B) = Sum{ Sum[ P(A,B) * I(A|B) ] }
+            """
+            return Entropy.Joint.bayes(key_A, key_B, rows, val_A, val_B) - Entropy.Personal.bayes(key_B, rows, val_B)
     
-    @staticmethod
-    def mutual(key_A, key_B, rows, val_A = None, val_B = None):
-        """ 
-        Stredné množstvo informácie o atribútu A v atribúte B
-        I(A;B) = H(A) + H(B) - H(A,B) 
-        OR
-        I(A;B) = H(A) - H(A|B) 
-        OR
-        I(A;B) = Sum{ Sum[ P(A,B) * I(A;B) ] }
-        """
-        return Entropy.Personal.regular(key_A, rows, val_A) + Entropy.Personal.regular(key_B, rows, val_B) - Entropy.Joint.regular(key_A, key_B, rows, val_A, val_B)
+        @staticmethod
+        def fuzzy(A, B, rows: list, key_B = None):
+            entropy = .0
+            if key_B is not None:
+                for col_A in range(len(rows[0][A])):
+                    entropy += Cardinality.joint(B, key_B, A, col_A, rows) * Information.Conditional.fuzzy(A, col_A, B, key_B, rows)
+            else:
+                ######  this is one approach ########
+                for col_B in range(len(rows[0][B])):
+                    entropy += Entropy.Conditional.fuzzy(A, B, rows, col_B)
+                #####################################
+            return entropy
     
+    class Mutual:
+        @staticmethod
+        def bayes(key_A, key_B, rows, val_A = None, val_B = None):
+            """ 
+            Stredné množstvo informácie o atribútu A v atribúte B
+            I(A;B) = H(A) + H(B) - H(A,B) 
+            OR
+            I(A;B) = H(A) - H(A|B) 
+            OR
+            I(A;B) = Sum{ Sum[ P(A,B) * I(A;B) ] }
+            """
+            return Entropy.Personal.bayes(key_A, rows, val_A) + Entropy.Personal.bayes(key_B, rows, val_B) - Entropy.Joint.bayes(key_A, key_B, rows, val_A, val_B)
+
+        @staticmethod
+        def fuzzy(A, B, rows: list, key_B = None):
+            return Entropy.Personal.fuzzy(A, rows) - Entropy.Conditional.fuzzy(A, B, rows, key_B)
+        
     @staticmethod
     def stability(key_A, key_B, rows, val_A = None, val_B = None):
         """
-        Coefficient of atribute connection stability, it determines which atribute contributes 
-        
+        Coefficient of atribute connection stability, it determines which atribute contributes         
         """
-        return Entropy.mutual(key_B, key_A, rows, val_A, val_B) / Entropy.Personal.regular(key_A, rows, val_A)
+        return Entropy.Mutual.bayes(key_B, key_A, rows, val_A, val_B) / Entropy.Personal.bayes(key_A, rows, val_A)
     
