@@ -1,6 +1,9 @@
 from enum import Enum
 from Statistics import Statistics
 from Statistics import Information
+from Statistics import Entropy
+from Statistics import Cardinality
+
 class Head(Enum):
     Tumor = 0
     History = 1
@@ -44,9 +47,14 @@ for row in data:
                     
 print(sums)
 
-print(Statistics.cardinality(data, Head))
-print(Information.Personal.fuzzy(Head.History.value, 0, data, head=Head))
-print(Information.Personal.fuzzy(Head.Cancer.value, 0, data, head=Head))
-print(Information.Joint.fuzzy(Head.Cancer.value, 0, Head.History.value, 0, data, head=Head))
-print(Information.Conditional.fuzzy(Head.Cancer.value, 0, Head.History.value, 0, data, head=Head))
+# print(Cardinality.complete(data, Head))
+# print(Information.Personal.fuzzy(Head.History.value, 0, data, head=Head))
+# print(Information.Personal.fuzzy(Head.Cancer.value, 0, data, head=Head))
+# print(Information.Joint.fuzzy(Head.Cancer.value, 0, Head.History.value, 0, data, head=Head))
+# print(Information.Conditional.fuzzy(Head.Cancer.value, 0, Head.History.value, 0, data, head=Head))
 print(Information.Mutual.fuzzy(Head.Cancer.value, 0, Head.History.value, 0, data, head=Head))
+
+# print(Entropy.Personal.fuzzy(Head.History.value, data, head=Head))
+# print(Entropy.Personal.fuzzy(Head.Cancer.value, data, head=Head))
+# print(Cardinality.cartesian(Head.Cancer.value, 0, Head.History.value, 0, data))
+# print(Entropy.Joint.fuzzy(Head.Cancer.value, Head.History.value, data, Head))

@@ -65,24 +65,40 @@ class Statistics:
                 X[i] = Statistics.normalize(x_old=X[i], x_min=x_min, x_max=x_max) * (b - a) + a
             return X
     
+class Cardinality:
     @staticmethod
-    def cardinality(rows: list, head):
-        sums = { i.value : dict() for i in head }
+    def complete(rows: list, head):
+        sums_row = { i.value : dict() for i in head }
         
         for row in rows:
             for col, col_list in enumerate(row):
                 for cell, val in enumerate(col_list):
                     try:
-                        sums[col][cell] += val
+                        sums_row[col][cell] += val
                     except KeyError:
                         try:
-                            sums[col][cell] = val
+                            sums_row[col][cell] = val
                         except KeyError:
-                            sums[col] = dict()
-                            sums[col][cell] = val
-        return sums
-    
-    
+                            sums_row[col] = dict()
+                            sums_row[col][cell] = val
+        return sums_row
+
+    @staticmethod
+    def personal(A, rows: list, key_A = None):            
+        ret_sum = .0
+        for row in rows:
+            # for col in row[A]:
+            if key_A is not None:
+                ret_sum += row[A][key_A]
+            else:
+                ret_sum += sum([val for val in row[A]])
+        
+        return ret_sum
+
+    @staticmethod
+    def cartesian(A, key_A, B, key_B, rows: list):
+        return sum([row[A][key_A] * row[B][key_B] for row in rows])
+
 class Probability:
     @staticmethod        
     def of(A = None, key = None, rows = None, M = None, N = None):
@@ -145,10 +161,11 @@ class Information:
             if n is None:
                 if head is None:
                     raise AttributeError
-                sums = Statistics.cardinality(rows, head)
+                sums = Cardinality.complete(rows, head)
                 n = sum([i for i in sums[A].values()])
             
-            return math.log2(n) - math.log2(sum([row[A][key_A] for row in rows]))
+            # return math.log2(n) - math.log2(sum([row[A][key_A] for row in rows]))
+            return math.log2(n) - math.log2(Cardinality.personal(A, rows, key_A))
     
     class Joint:
         @staticmethod
@@ -167,10 +184,11 @@ class Information:
             if n is None:
                 if head is None:
                     raise AttributeError
-                sums = Statistics.cardinality(rows, head)
+                sums = Cardinality.complete(rows, head)
                 n = sum([i for i in sums[A].values()])
             
-            return math.log2(n) - math.log2(sum([row[A][key_A] * row[B][key_B] for row in rows]))
+            # return math.log2(n) - math.log2(sum([row[A][key_A] * row[B][key_B] for row in rows]))
+            return math.log2(n) - math.log2(Cardinality.cartesian(A, key_A, B, key_B, rows))
         
     class Conditional:
         @staticmethod
@@ -186,8 +204,9 @@ class Information:
             if n is None:
                 if head is None:
                     raise AttributeError
-                sums = Statistics.cardinality(rows, head)
-                n = sum([i for i in sums[A].values()])
+                # sums = Cardinality.complete(rows, head)
+                # n = sum([i for i in sums[A].values()])
+                n = Cardinality.personal(A, rows)
             
             return Information.Joint.fuzzy(B, key_B, A, key_A, rows, n=n) - Information.Personal.fuzzy(B, key_B, rows, n=n)
     
@@ -211,8 +230,9 @@ class Information:
             if n is None:
                 if head is None:
                     raise AttributeError
-                sums = Statistics.cardinality(rows, head)
-                n = sum([i for i in sums[A].values()])
+                # sums = Cardinality.complete(rows, head)
+                # n = sum([i for i in sums[A].values()])
+                n = Cardinality.personal(A, rows)
             
             return Information.Personal.fuzzy(A, key_A, rows, n=n) - Information.Conditional.fuzzy(A, key_A, B, key_B, rows, n=n)
             
@@ -232,50 +252,67 @@ class Entropy:
                 values[row[key_A]] = 1            
             
         if val_A is None:
-            entropy = sum([Entropy.personal_helper(val, length) for key, val in values.items()])
+            entropy = sum([Entropy.Personal.regular_helper(val, length) for key, val in values.items()])
         else:
-            entropy = sum([Entropy.personal_helper(val, length) if val_A == key else 0 for key, val in values.items()])
+            entropy = sum([Entropy.Personal.regular_helper(val, length) if val_A == key else 0 for key, val in values.items()])
             
         return entropy
     
-    @staticmethod
-    def personal(key_A, rows, val_A = None):
-        """ H(A) = Sum{ P(A) * I(A) } """
-        return Entropy.of(key_A, rows, val_A)
-    
-    @staticmethod
-    def personal_helper(M, N):
-        prob = Probability.of(M=M, N=N)
+    class Personal:
+        @staticmethod
+        def regular(key_A, rows, val_A = None):
+            """ H(A) = Sum{ P(A) * I(A) } """
+            return Entropy.of(key_A, rows, val_A)
         
-        return prob * Information.of(probability = prob)
+        @staticmethod
+        def regular_helper(M, N):
+            prob = Probability.of(M=M, N=N)
             
-    @staticmethod
-    def conjoint(key_A, key_B, rows, val_A = None, val_B = None):
-        """ H(A,B) = Sum{ Sum[ P(A,B) * I(A,B) ] } """
-        values = dict() #{ key_A : { key_B : dict() } }
-        length = len(rows)
+            return prob * Information.of(probability = prob)
         
-        for row in rows:
-            try:
-                values[row[key_A]][row[key_B]] += 1
-            except KeyError:
-                try:
-                    values[row[key_A]][row[key_B]] = 1
-                except KeyError:
-                    values[row[key_A]] = dict()
-                    values[row[key_A]][row[key_B]] = 1
+        @staticmethod
+        def fuzzy(A, rows: list, head):
+            sums_row = Cardinality.complete(rows, head)
+            ret_val = .0
+            
+            for key, val in sums_row[A].items():
+                ret_val += val * Information.Personal.fuzzy(A, key, rows, head=head)
+            
+            return ret_val    
 
-        tmp_sum = .0
-        
-        for a_key, dict_of_b in values.items():
-            if val_A is None or val_A == a_key:
-                for b_key, occurrence in dict_of_b.items():
-                    if val_B is None or val_B == b_key:
-                        prob = Probability.of(M = occurrence, N = length)
-                        tmp_sum += prob * Information.of(probability = prob)
+    class Joint:                    
+        @staticmethod
+        def regular(key_A, key_B, rows, val_A = None, val_B = None):
+            """ H(A,B) = Sum{ Sum[ P(A,B) * I(A,B) ] } """
+            values = dict() #{ key_A : { key_B : dict() } }
+            length = len(rows)
             
-        return tmp_sum
-    
+            for row in rows:
+                try:
+                    values[row[key_A]][row[key_B]] += 1
+                except KeyError:
+                    try:
+                        values[row[key_A]][row[key_B]] = 1
+                    except KeyError:
+                        values[row[key_A]] = dict()
+                        values[row[key_A]][row[key_B]] = 1
+
+            tmp_sum = .0
+            
+            for a_key, dict_of_b in values.items():
+                if val_A is None or val_A == a_key:
+                    for b_key, occurrence in dict_of_b.items():
+                        if val_B is None or val_B == b_key:
+                            prob = Probability.of(M = occurrence, N = length)
+                            tmp_sum += prob * Information.of(probability = prob)
+                
+            return tmp_sum
+
+        @staticmethod
+        def fuzzy(A, key_A, B, key_B, rows: list, head = None, n = None):
+           for row in rows:
+               ret_sum += Cardinality.cartesian(A, key_A, B, key_B, rows) * Information.Joint.fuzzy(A, key_A, B, key_B, rows, head, n)
+        
     @staticmethod
     def conditional(key_A, key_B, rows, val_A = None, val_B = None):
         """ 
@@ -283,7 +320,7 @@ class Entropy:
         OR
         H(A|B) = Sum{ Sum[ P(A,B) * I(A|B) ] }
         """
-        return Entropy.conjoint(key_A, key_B, rows, val_A, val_B) - Entropy.personal(key_B, rows, val_B)
+        return Entropy.Joint.regular(key_A, key_B, rows, val_A, val_B) - Entropy.Personal.regular(key_B, rows, val_B)
     
     @staticmethod
     def mutual(key_A, key_B, rows, val_A = None, val_B = None):
@@ -295,7 +332,7 @@ class Entropy:
         OR
         I(A;B) = Sum{ Sum[ P(A,B) * I(A;B) ] }
         """
-        return Entropy.personal(key_A, rows, val_A) + Entropy.personal(key_B, rows, val_B) - Entropy.conjoint(key_A, key_B, rows, val_A, val_B)
+        return Entropy.Personal.regular(key_A, rows, val_A) + Entropy.Personal.regular(key_B, rows, val_B) - Entropy.Joint.regular(key_A, key_B, rows, val_A, val_B)
     
     @staticmethod
     def stability(key_A, key_B, rows, val_A = None, val_B = None):
@@ -303,82 +340,5 @@ class Entropy:
         Coefficient of atribute connection stability, it determines which atribute contributes 
         
         """
-        return Entropy.mutual(key_B, key_A, rows, val_A, val_B) / Entropy.personal(key_A, rows, val_A)
-    
-header = ['Tumor',  'History',    'Heredity',   'Age',    'Cancer']
-# data = [
-#     #Tumor  #History    #Heredity   #Age    #Cancer
-#     ['confirmed',	85,	'yes',	'younger',	'high'],
-#     ['confirmed',	80,	'yes',	'elder',	'high'],
-#     ['no',	83,	'yes',	'younger',	'low'],
-#     ['non confirmed',	70,	'yes',	'younger',	'low'],
-#     ['non confirmed',	68,	'no',	'younger',	'low'],
-#     ['non confirmed',	65,	'no',	'elder',	'high'],
-#     ['no',	64,	'no',	'elder',	'low'],
-#     ['confirmed',	72,	'yes',	'younger',	'high'],
-#     ['confirmed',	69,	'no',	'younger',	'low'],
-#     ['non confirmed',	75,	'no',	'younger',	'low'],
-#     ['confirmed',	75,	'no',	'elder',	'low'],
-#     ['no',	72,	'yes',	'elder',	'low'],
-#     ['no',	81,	'no',	'younger',	'low'],
-#     ['non confirmed',	71,	'yes',	'elder',	'high']
-# ]
-
-data = [
-    #Tumor  #History    #Heredity   #Age    #Cancer
-    ['confirmed',	'high',	'yes',	'younger',	'high'],
-    ['confirmed',	'high',	'yes',	'elder',	'high'],
-    ['no',	'high',	'yes',	'younger',	'low'],
-    ['non confirmed',	'medium',	'yes',	'younger',	'low'],
-    ['non confirmed',	'low',	'no',	'younger',	'low'],
-    ['non confirmed',	'low',	'no',	'elder',	'high'],
-    ['no',	'low',	'no',	'elder',	'low'],
-    ['confirmed',	'medium',	'yes',	'younger',	'high'],
-    ['confirmed',	'low',	'no',	'younger',	'low'],
-    ['non confirmed',	'medium',	'no',	'younger',	'low'],
-    ['confirmed',	'medium',	'no',	'elder',	'low'],
-    ['no',	'medium',	'yes',	'elder',	'low'],
-    ['no',	'high',	'no',	'younger',	'low'],
-    ['non confirmed',	'medium',	'yes',	'elder',	'high']
-]
-
-forms = '{:15s}{:10s}{:10s}{:10s}{:10s}{:10s}{:10s}'
-
-print(forms.format('Atribute A_i', 'H(Cancer)', 'H(A_i)', 'H(B,A_i)', 'I(B;A_i)', 'H(B|A_i)', 's(A_i,|B)'))
-
-cancer_idx = len(header) - 1
-# entropy of cancer
-cancEnt = Entropy.personal(cancer_idx, data)
-
-for col_idx in range(cancer_idx):
-    # what = ()
-    formf = "{:15s}{:1.4f}{:10.4f}{:10.4f}{:10.4f}{:10.4f}{:10.4f}"
-    print(formf.format(
-        header[col_idx],
-        cancEnt,
-        Entropy.personal(col_idx, data),
-        Entropy.conjoint(cancer_idx, col_idx, data),
-        Entropy.mutual(cancer_idx, col_idx, data),
-        Entropy.conditional(cancer_idx, col_idx, data),
-        Entropy.stability(col_idx, cancer_idx, data))
-    )
-    # print(formf % what)
-    
-
-print(forms.format('Atribute A_i', 'H(B|confirmed)', 'H(A_i|confirmed)', 'H(B,A_i,confirmed)', 'I(B;A_i|confirmed)', 'H(B|A_i)', 's(A_i,|B)'))    
-cancIfTumorConfirmed = Entropy.conditional(cancer_idx, 0, data, val_B='confirmed')
-
-for col_idx in range(1, cancer_idx):
-    # what = ()
-    formf = "{:15s}{:1.4f}{:10.4f}{:10.4f}{:10.4f}{:10.4f}{:10.4f}"
-    print(formf.format(
-        header[col_idx],
-        cancIfTumorConfirmed,
-        Entropy.conjoint(col_idx, 0, data, val_B='confirmed'),
-        Entropy.conjoint(cancer_idx, col_idx, data, ),
-        Entropy.mutual(cancer_idx, col_idx, data),
-        Entropy.conditional(cancer_idx, col_idx, data),
-        Entropy.stability(col_idx, cancer_idx, data))
-    )
-    # print(formf % what)
+        return Entropy.mutual(key_B, key_A, rows, val_A, val_B) / Entropy.Personal.regular(key_A, rows, val_A)
     
