@@ -174,8 +174,11 @@ class Information:
         @staticmethod
         def fuzzy(A, key_A, B, key_B, rows: list):
             n = Cardinality.personal(A, rows)
-            
-            return math.log2(n) - math.log2(Cardinality.joint(A, key_A, B, key_B, rows))
+            joint = Cardinality.joint(A, key_A, B, key_B, rows)
+            if joint > 0:
+                return math.log2(n) - math.log2(Cardinality.joint(A, key_A, B, key_B, rows))
+            else:
+                return math.log2(n)
         
     class Conditional:
         @staticmethod
