@@ -45,7 +45,7 @@ for row in data:
                     sums[col] = dict()
                     sums[col][cell] = val
                     
-print(sums)
+# print(sums)
 
 # print(Cardinality.complete(data, Head))
 # print(Information.Personal.fuzzy(Head.History.value, 0, data))
@@ -55,12 +55,29 @@ print(sums)
 # print(Information.Mutual.fuzzy(Head.Cancer.value, 0, Head.History.value, 0, data))
 
 # print(Entropy.Personal.fuzzy(Head.History.value, data))
-# print(Entropy.Personal.fuzzy(Head.Cancer.value, data))
 # print(Cardinality.cartesian(Head.Cancer.value, 0, Head.History.value, 0, data))
 # print(Entropy.Joint.fuzzy(Head.Cancer.value, Head.History.value, data))
 # print(Entropy.Conditional.fuzzy(Head.Cancer.value, Head.History.value, data, 0))
 # print(Entropy.Conditional.fuzzy(Head.Cancer.value, Head.History.value, data))
+
+##### vypocitame vstupnu entropiu vystupneho atributu
+
+print(Entropy.Personal.fuzzy(Head.Cancer.value, data))
+print(Cardinality.personal(Head.Cancer.value, data, 0) / Cardinality.personal(Head.Cancer.value, data))
+print(Cardinality.personal(Head.Cancer.value, data, 1) / Cardinality.personal(Head.Cancer.value, data))
+print(Cardinality.personal(Head.Cancer.value, data, 2) / Cardinality.personal(Head.Cancer.value, data))
+
+##### vyberieme minimum z tychto podmienenych entropii
 print(Entropy.Conditional.fuzzy(Head.Cancer.value, Head.Tumor.value, data))
 print(Entropy.Conditional.fuzzy(Head.Cancer.value, Head.History.value, data))
 print(Entropy.Conditional.fuzzy(Head.Cancer.value, Head.Heredity.value, data))
 print(Entropy.Conditional.fuzzy(Head.Cancer.value, Head.Age.value, data))
+
+##### ta entropia ktora vysla najmensia cuze History teraz rozbijeme na vetvy 
+# print(Entropy.Conditional.fuzzy(Head.Cancer.value, Head.History.value, data, 0))
+# print(Entropy.Conditional.fuzzy(Head.Cancer.value, Head.History.value, data, 1))
+# print(Entropy.Conditional.fuzzy(Head.Cancer.value, Head.History.value, data, 2))
+##### frekvencia je zatial 1 pretoze sme v koreni
+
+# print(Cardinality.joint(Head.History.value, 0, Head.Tumor.value, 0, data))
+# print(Cardinality.joint(Head.Cancer.value, 0, Head.History.value, 0, data) / Cardinality.personal(Head.History.value, data, 0)) 

@@ -1,5 +1,6 @@
 import math
 import numpy
+from enum import Enum
 
 class Statistics:
     @staticmethod
@@ -65,6 +66,36 @@ class Statistics:
                 X[i] = Statistics.normalize(x_old=X[i], x_min=x_min, x_max=x_max) * (b - a) + a
             return X
     
+class DB:
+    @staticmethod
+    def distinct(rows: list, header: Enum, withColNames: bool = False):
+        # list of dictionaries, each dictionary contains values of attribute
+        # ex.: [{'non confirmed', 'confirmed', 'no'}]
+        data_vals = { col.value if not withColNames else col.name : set() for col in header }
+
+        for row in rows:
+            for col, val in enumerate(row):
+                try:
+                    if type(val) is str or type(val) is bool:
+                        data_vals[col if not withColNames else header(col).name].add(val)
+                    else: 
+                        continue
+                except Exception:
+                    print(f"{val} already in")
+
+        ###############OUTPUT###############
+        #{
+            # 'Tumor': {'non confirmed', 'confirmed', 'no'}, 
+            # 'History': {'low', 'high', 'medium'}, 
+            # 'Heredity': {'yes', 'no'}, 
+            # 'Age': {'younger', 'elder'}, 
+            # 'Cancer': {'low', 'high'}
+        # }
+        # or with keys as numbers
+        ####################################
+        
+        return data_vals
+
 class Cardinality:
     @staticmethod
     def complete(rows: list, head):
@@ -97,6 +128,21 @@ class Cardinality:
     @staticmethod
     def joint(A, key_A, B, key_B, rows: list):
         return sum([row[A][key_A] * row[B][key_B] for row in rows])
+    
+    @staticmethod
+    def conditional(col_val_pairs: dict, rows: list):
+        ret_sum = 0 #{ col : { val : 1 } for col, val in enumerate(col_val_pairs) }
+        
+        for row in rows:
+            condition_was_met = True
+            for col, val in col_val_pairs.items():
+                if row[col] != val:
+                   condition_was_met = False
+            
+            if condition_was_met:
+                ret_sum += 1
+        
+        return ret_sum
 
 class Probability:
     @staticmethod        
