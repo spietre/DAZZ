@@ -46,32 +46,39 @@ print()
 
 ##### vyberieme minimum z tychto podmienenych entropii
 print(f'H(B|A1) = {Entropy.Conditional.fuzzy(A.B, A.A1, data)}')
+print(f'H(B|A1). = {Entropy.Conditional._fuzzy({ A.B : None, A.A1 : None }, data)}')
 print(f'H(B|A2) = {Entropy.Conditional.fuzzy(A.B, A.A2, data)}')
+print(f'H(B|A2). = {Entropy.Conditional._fuzzy({ A.B : None, A.A2 : None }, data)}')
 print(f'H(B|A3) = {Entropy.Conditional.fuzzy(A.B, A.A3, data)}')
+print(f'H(B|A3). = {Entropy.Conditional._fuzzy({ A.B : None, A.A3 : None }, data)}')
 print(f'H(B|A4) = {Entropy.Conditional.fuzzy(A.B, A.A4, data)}')
+print(f'H(B|A4). = {Entropy.Conditional._fuzzy({ A.B : None, A.A4 : None }, data)}')
 print()
 
 #### najlepsie vyslo A2 
 #### pocitame vetvu A21
 print(f'H(B|A21) = {Entropy.Conditional.fuzzy(A.B, A.A2, data, 0)}')
-print(f'B1 = {Cardinality.joint(A.B, 0, A.A2, 0, data) / Cardinality.personal(A.A2, data, 0)}')
-print(f'B2 = {Cardinality.joint(A.B, 1, A.A2, 0, data) / Cardinality.personal(A.A2, data, 0)}')
-print(f'B3 = {Cardinality.joint(A.B, 2, A.A2, 0, data) / Cardinality.personal(A.A2, data, 0)}')
+print(f'H(B|A21). = {Entropy.Conditional._fuzzy({ A.B : None, A.A2 : 0 }, data)}')
+print(f'B1 = {Cardinality.joint({ A.B : 0, A.A2 : 0 }, data) / Cardinality.personal(A.A2, data, 0)}')
+print(f'B2 = {Cardinality.joint({ A.B : 1, A.A2 : 0 }, data) / Cardinality.personal(A.A2, data, 0)}')
+print(f'B3 = {Cardinality.joint({ A.B : 2, A.A2 : 0 }, data) / Cardinality.personal(A.A2, data, 0)}')
 print(f'f = {Cardinality.personal(A.A2, data, 0) / Cardinality.personal(A.A2, data)}')
 print()
 
 #### pocitame vetvu A22
 print(f'H(B|A22) = {Entropy.Conditional.fuzzy(A.B, A.A2, data, 1)}')
-print(f'B1 = {Cardinality.joint(A.B, 0, A.A2, 1, data) / Cardinality.personal(A.A2, data, 1)}')
-print(f'B2 = {Cardinality.joint(A.B, 1, A.A2, 1, data) / Cardinality.personal(A.A2, data, 1)}')
-print(f'B3 = {Cardinality.joint(A.B, 2, A.A2, 1, data) / Cardinality.personal(A.A2, data, 1)}')
+print(f'H(B|A22). = {Entropy.Conditional._fuzzy({ A.B : None, A.A2 : 1 }, data)}')
+print(f'B1 = {Cardinality.joint({ A.B : 0, A.A2 : 1 }, data) / Cardinality.personal(A.A2, data, 1)}')
+print(f'B2 = {Cardinality.joint({ A.B : 1, A.A2 : 1 }, data) / Cardinality.personal(A.A2, data, 1)}')
+print(f'B3 = {Cardinality.joint({ A.B : 2, A.A2 : 1 }, data) / Cardinality.personal(A.A2, data, 1)}')
 print(f'f = {Cardinality.personal(A.A2, data, 1) / Cardinality.personal(A.A2, data)}')
 print()
 
 #### pocitame vetvu A23
 print(f'H(B|A23) = {Entropy.Conditional.fuzzy(A.B, A.A2, data, 2)}')
-print(f'B1 = {Cardinality.joint(A.B, 0, A.A2, 2, data) / Cardinality.personal(A.A2, data, 2)}')
-print(f'B2 = {Cardinality.joint(A.B, 1, A.A2, 2, data) / Cardinality.personal(A.A2, data, 2)}')
-print(f'B3 = {Cardinality.joint(A.B, 2, A.A2, 2, data) / Cardinality.personal(A.A2, data, 2)}')
+print(f'H(B|A23). = {Entropy.Conditional._fuzzy({ A.B : None, A.A2 : 2 }, data)}')
+print(f'B1 = {Cardinality.joint({ A.B : 0, A.A2 : 2 }, data) / Cardinality.personal(A.A2, data, 2)}')
+print(f'B2 = {Cardinality.joint({ A.B : 1, A.A2 : 2 }, data) / Cardinality.personal(A.A2, data, 2)}')
+print(f'B3 = {Cardinality.joint({ A.B : 2, A.A2 : 2 }, data) / Cardinality.personal(A.A2, data, 2)}')
 print(f'f = {Cardinality.personal(A.A2, data, 2) / Cardinality.personal(A.A2, data)}')
 print()

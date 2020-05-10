@@ -1,23 +1,23 @@
-from BayesData import Cancer
-from BayesData import ECancer
 from Statistics import Cardinality
 from Statistics import DB
+from BreastCancerData import ECancer, data
 
 
 
-# result = Cardinality.conditional({Tumor.History : 'low', Tumor.Heredity : 'no'}, Tumor.LinguisticDataSet)
 
-# print(result)
-
-# result = Cardinality.conditional({Tumor.Heredity : 'no'}, Tumor.LinguisticDataSet)
-
-# print(result)
-
-# Bayes.distinctColVals(Cancer.LinguisticDataSet, True)
-
-# print(
-cols = DB.distinct(Cancer.LinguisticDataSet, ECancer)
+cols = DB.distinct(data, ECancer)
 associationRules = set()
+
+# i = ECancer.a3
+# j = ECancer.a8
+# k = ECancer.a9
+
+# icol = 'ge40'
+# jcol = 'right'
+# kcol = 'left_low'
+
+min_accuracy = 1
+min_support = 30
 
 for i in ECancer:    
     for j in ECancer:
@@ -28,84 +28,72 @@ for i in ECancer:
             for icol in cols[i.value]:
                 for jcol in cols[j.value]:
                     for kcol in cols[k.value]:
-                        
+
                         allTrue = Cardinality.Bayes.conditional({
                                 i.value : icol,
                                 j.value : jcol,
                                 k.value : kcol
-                            }, Cancer.LinguisticDataSet)
-                        if (allTrue > 1):
+                            }, data)
+                        if (allTrue >= min_support):
                             # 001
                             ooi = Cardinality.Bayes.conditional({
                                     i.value : icol,
                                     j.value : jcol
-                                }, Cancer.LinguisticDataSet)
-                            if(ooi != 0 and allTrue / ooi == 1):
+                                }, data)
+                            if(ooi != 0 and allTrue / ooi >= min_accuracy):
                                 string = f'IF {i.name}={icol} and {j.name}={jcol} THEN {k.name}={kcol}\t support: {allTrue}, confidence: {allTrue / ooi * 100}%'
-                                # print(f'\t001 {string}')
                                 associationRules.add(string)
-                            
+
                             # 010
                             oio = Cardinality.Bayes.conditional({
                                     i.value : icol,
                                     k.value : kcol
-                                }, Cancer.LinguisticDataSet)
-                            if(oio != 0 and allTrue / oio == 1):
+                                }, data)
+                            if(oio != 0 and allTrue / oio >= min_accuracy):
                                 string = f'IF {i.name}={icol} and {k.name}={kcol} THEN {j.name}={jcol}\t support: {allTrue}, confidence: {allTrue / oio * 100}%'
-                                # print(f'\t010 {string}')
                                 associationRules.add(string)
                                 
                             # 011
                             oii = Cardinality.Bayes.conditional({
                                     i.value : icol
-                                }, Cancer.LinguisticDataSet)
-                            if(oii != 0 and allTrue / oii == 1):
+                                }, data)
+                            if(oii != 0 and allTrue / oii >= min_accuracy):
                                 string = f'IF {i.name}={icol} THEN {k.name}={kcol} and {j.name}={jcol}\t support: {allTrue}, confidence: {allTrue / oii * 100}%'
-                                # print(f'\t011 {string}')
                                 associationRules.add(string)
-                            
+
                             # 100
                             ioo = Cardinality.Bayes.conditional({
                                     j.value : jcol,
                                     k.value : kcol
-                                }, Cancer.LinguisticDataSet)
-                            if(ioo != 0 and allTrue / ioo == 1):
+                                }, data)
+                            if(ioo != 0 and allTrue / ioo >= min_accuracy):
                                 string = f'IF {k.name}={kcol} and {j.name}={jcol} THEN {i.name}={icol}\t support: {allTrue}, confidence: {allTrue / ioo * 100}%'
-                                # print(f'\t100 {string}')
                                 associationRules.add(string)
-                            
+
                             # 101
                             ioi = Cardinality.Bayes.conditional({                            
                                     j.value : jcol
-                                }, Cancer.LinguisticDataSet)
-                            if(ioi != 0 and allTrue /ioi == 1):
+                                }, data)
+                            if(ioi != 0 and allTrue /ioi >= min_accuracy):
                                 string = f'IF {j.name}={jcol} THEN {i.name}={icol} and {k.name}={kcol}\t support: {allTrue}, confidence: {allTrue / ioi * 100}%'
-                                # print(f'\t101 {string}')
                                 associationRules.add(string)
                                 
                             # 110
                             iio = Cardinality.Bayes.conditional({                            
                                     k.value : kcol
-                                }, Cancer.LinguisticDataSet)
-                            if(iio != 0 and allTrue / iio == 1):
+                                }, data)
+                            if(iio != 0 and allTrue / iio >= min_accuracy):
                                 string = f'IF {k.name}={kcol} THEN {j.name}={jcol} and {i.name}={icol}\t support: {allTrue}, confidence: {allTrue / iio * 100}%'
-                                # print(f'\t110 {string}')
                                 associationRules.add(string)
                                 
-                            # # 111
-                            # if(allTrue/Cardinality.Bayes.conditional({                            
-                            #     k.value : kcol
-                            # }, Cancer.LinguisticDataSet) == 1):
-                            #     print(f'IF {k.name}={kcol} THEN {j.name}={jcol} and {i.name}={icol}')
-                                    
-for i, string in enumerate(associationRules):
-    print(f'{i} {string}') 
-                        
-# true means that item is in result    
-# def compute(i: bool, j: bool, k: bool):
-#     if not i and not j and not k:
-#         raise Exception('all arguments false!')
+                            # 111
+                            if(allTrue/len(data) > min_accuracy):
+                                string = f'IF true THEN {i.name}={icol} and {j.name}={jcol} and {k.name}={kcol}\t support: {allTrue}, confidence: {allTrue / len(data) * 100}%'
+                                associationRules.add(string)
     
     
-        
+with open('breastCancer.txt', 'w') as f:
+    for i, string in enumerate(associationRules):
+        f.write(f'{string}\n')
     
+        # print(f'{i} {string}') 
