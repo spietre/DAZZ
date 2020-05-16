@@ -160,6 +160,14 @@ class Cardinality:
         
         return ret_sum
     
+    @staticmethod
+    def resulting(atr_col_pairs: dict, rows: list):
+        #skip first item that is A
+        first_skipped = iter(atr_col_pairs.items())
+        next(first_skipped) # first item is skipped here (output atribute)
+        
+        return Cardinality.joint(atr_col_pairs, rows) / Cardinality.joint(dict(first_skipped), rows)
+    
     class Bayes:
         @staticmethod
         def conditional(col_val_pairs: dict, rows: list):
@@ -328,6 +336,16 @@ class Information:
                 I(A;B) = I(A) + I(B) - I(A,B)
              """
             return Information.Personal.fuzzy(A, key_A, rows) - Information.Conditional.fuzzy(A, key_A, B, key_B, rows)
+        
+        @staticmethod
+        def _fuzzy(atr_col_pairs: dict, rows: list):
+            last_skipped = dict()
+            i = -1
+            for key, val in atr_col_pairs.items():
+                i += 1
+                if i < len(atr_col_pairs) - 1:
+                    last_skipped[key] = val
+            return Entropy.Conditional._fuzzy(last_skipped, rows) - Entropy.Conditional._fuzzy(atr_col_pairs, rows)
             
     
 class Entropy:
