@@ -213,31 +213,31 @@ print()
 
 print('\t\t\tbranch: B -> A22 -> A42 -> A11')
 print('\t\t\t----------------------------------------------------------------------')
-print(f'\t\t\tH(B|A22, A42)= {Entropy.Conditional._fuzzy({ Atrs.Cancer: None, Atrs.History: 1, Atrs.Age: 1, Atrs.Tumor: 0 }, data)}')
-print(f'\t\t\tB1 = {Cardinality.resulting({ Atrs.Cancer: 0, Atrs.History: 1, Atrs.Age: 1, Atrs.Tumor: 0 }, data) * 100}%')
-print(f'\t\t\tB2 = {Cardinality.resulting({ Atrs.Cancer: 1, Atrs.History: 1, Atrs.Age: 1, Atrs.Tumor: 0 }, data) * 100}%')
-print(f'\t\t\tB3 = {Cardinality.resulting({ Atrs.Cancer: 2, Atrs.History: 1, Atrs.Age: 1, Atrs.Tumor: 0 }, data) * 100}%')
-print(f'\t\t\tf = {Cardinality.joint({ Atrs.History: 1, Atrs.Age: 1, Atrs.Tumor: 0 }, data) / Cardinality.personal(Atrs.History, data)} < {Atrs.alfa} <--- uz dalej nejdeme')
+print(f'\t\t\tH(B|A22, A42)= {Entropy.Conditional._fuzzy({ Atrs.Cancer: None, Atrs.History: 1, Atrs.Age: 1, Atrs.Tumor: 0 }, data)}') # H(B|A22, A42)= 1.2359679867187277
+print(f'\t\t\tB1 = {Cardinality.resulting({ Atrs.Cancer: 0, Atrs.History: 1, Atrs.Age: 1, Atrs.Tumor: 0 }, data) * 100}%') # B1 = 57.89861751152073%
+print(f'\t\t\tB2 = {Cardinality.resulting({ Atrs.Cancer: 1, Atrs.History: 1, Atrs.Age: 1, Atrs.Tumor: 0 }, data) * 100}%') # B2 = 39.06912442396314%
+print(f'\t\t\tB3 = {Cardinality.resulting({ Atrs.Cancer: 2, Atrs.History: 1, Atrs.Age: 1, Atrs.Tumor: 0 }, data) * 100}%') # B3 = 3.032258064516129%
+print(f'\t\t\tf = {Cardinality.joint({ Atrs.History: 1, Atrs.Age: 1, Atrs.Tumor: 0 }, data) / Cardinality.personal(Atrs.History, data)} < {Atrs.alfa} <--- uz dalej nejdeme') # f = 0.0678125
 print('\t\t\txxx')
 print()
 
 print('\t\t\tbranch: B -> A22 -> A42 -> A12')
 print('\t\t\t----------------------------------------------------------------------')
-print(f'\t\t\tH(B|A22, A42)= {Entropy.Conditional._fuzzy({ Atrs.Cancer: None, Atrs.History: 1, Atrs.Age: 1, Atrs.Tumor: 1 }, data)}')
-print(f'\t\t\tB1 = {Cardinality.resulting({ Atrs.Cancer: 0, Atrs.History: 1, Atrs.Age: 1, Atrs.Tumor: 1 }, data) * 100}%')
-print(f'\t\t\tB2 = {Cardinality.resulting({ Atrs.Cancer: 1, Atrs.History: 1, Atrs.Age: 1, Atrs.Tumor: 1 }, data) * 100}%')
-print(f'\t\t\tB3 = {Cardinality.resulting({ Atrs.Cancer: 2, Atrs.History: 1, Atrs.Age: 1, Atrs.Tumor: 1 }, data) * 100}%')
-print(f'\t\t\tf = {Cardinality.joint({ Atrs.History: 1, Atrs.Age: 1, Atrs.Tumor: 1 }, data) / Cardinality.personal(Atrs.History, data)} < {Atrs.alfa} <--- uz dalej nejdeme')
+print(f'\t\t\tH(B|A22, A42)= {Entropy.Conditional._fuzzy({ Atrs.Cancer: None, Atrs.History: 1, Atrs.Age: 1, Atrs.Tumor: 1 }, data)}') # H(B|A22, A42)= 2.153204326753506
+print(f'\t\t\tB1 = {Cardinality.resulting({ Atrs.Cancer: 0, Atrs.History: 1, Atrs.Age: 1, Atrs.Tumor: 1 }, data) * 100}%') # B1 = 55.09079118028532%
+print(f'\t\t\tB2 = {Cardinality.resulting({ Atrs.Cancer: 1, Atrs.History: 1, Atrs.Age: 1, Atrs.Tumor: 1 }, data) * 100}%') # B2 = 14.163424124513618%
+print(f'\t\t\tB3 = {Cardinality.resulting({ Atrs.Cancer: 2, Atrs.History: 1, Atrs.Age: 1, Atrs.Tumor: 1 }, data) * 100}%') # B3 = 30.745784695201035%
+print(f'\t\t\tf = {Cardinality.joint({ Atrs.History: 1, Atrs.Age: 1, Atrs.Tumor: 1 }, data) / Cardinality.personal(Atrs.History, data)} < {Atrs.alfa} <--- uz dalej nejdeme') # f = 0.096375
 print('\t\t\txxx')
 print()
 
 print('\t\t\tbranch: B -> A22 -> A42 -> A13')
 print('\t\t\t----------------------------------------------------------------------')
-print(f'\t\t\tH(B|A22, A42)= {Entropy.Conditional._fuzzy({ Atrs.Cancer: None, Atrs.History: 1, Atrs.Age: 1, Atrs.Tumor: 2 }, data)}')
-print(f'\t\t\tB1 = {Cardinality.resulting({ Atrs.Cancer: 0, Atrs.History: 1, Atrs.Age: 1, Atrs.Tumor: 2 }, data) * 100}%')
-print(f'\t\t\tB2 = {Cardinality.resulting({ Atrs.Cancer: 1, Atrs.History: 1, Atrs.Age: 1, Atrs.Tumor: 2 }, data) * 100}%')
-print(f'\t\t\tB3 = {Cardinality.resulting({ Atrs.Cancer: 2, Atrs.History: 1, Atrs.Age: 1, Atrs.Tumor: 2 }, data) * 100}%')
-print(f'\t\t\tf = {Cardinality.joint({ Atrs.History: 1, Atrs.Age: 1, Atrs.Tumor: 2 }, data) / Cardinality.personal(Atrs.History, data)} < {Atrs.alfa} <--- uz dalej nejdeme')
+print(f'\t\t\tH(B|A22, A42)= {Entropy.Conditional._fuzzy({ Atrs.Cancer: None, Atrs.History: 1, Atrs.Age: 1, Atrs.Tumor: 2 }, data)}') # H(B|A22, A42)= 0.645468779390312
+print(f'\t\t\tB1 = {Cardinality.resulting({ Atrs.Cancer: 0, Atrs.History: 1, Atrs.Age: 1, Atrs.Tumor: 2 }, data) * 100}%') # B1 = 36.93156732891832%
+print(f'\t\t\tB2 = {Cardinality.resulting({ Atrs.Cancer: 1, Atrs.History: 1, Atrs.Age: 1, Atrs.Tumor: 2 }, data) * 100}%') # B2 = 13.620309050772624%
+print(f'\t\t\tB3 = {Cardinality.resulting({ Atrs.Cancer: 2, Atrs.History: 1, Atrs.Age: 1, Atrs.Tumor: 2 }, data) * 100}%') # B3 = 49.44812362030904%
+print(f'\t\t\tf = {Cardinality.joint({ Atrs.History: 1, Atrs.Age: 1, Atrs.Tumor: 2 }, data) / Cardinality.personal(Atrs.History, data)} < {Atrs.alfa} <--- uz dalej nejdeme') # f = 0.028312500000000004
 print('\t\t\txxx')
 print()
 print()
