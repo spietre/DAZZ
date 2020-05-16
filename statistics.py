@@ -337,17 +337,7 @@ class Information:
              """
             return Information.Personal.fuzzy(A, key_A, rows) - Information.Conditional.fuzzy(A, key_A, B, key_B, rows)
         
-        @staticmethod
-        def _fuzzy(atr_col_pairs: dict, rows: list):
-            last_skipped = dict()
-            i = -1
-            for key, val in atr_col_pairs.items():
-                i += 1
-                if i < len(atr_col_pairs) - 1:
-                    last_skipped[key] = val
-            return Entropy.Conditional._fuzzy(last_skipped, rows) - Entropy.Conditional._fuzzy(atr_col_pairs, rows)
-            
-    
+        
 class Entropy:
     @staticmethod
     def of(key_A, rows, val_A = None):
@@ -510,6 +500,21 @@ class Entropy:
             """
             return Entropy.Personal.fuzzy(A, rows) - Entropy.Conditional.fuzzy(A, B, rows, key_B)
         
+        @staticmethod
+        def _fuzzy(atr_col_pairs: dict, rows: list):
+            last_skipped = dict()
+            i = -1
+            for key, val in atr_col_pairs.items():
+                i += 1
+                if i < len(atr_col_pairs) - 1:
+                    last_skipped[key] = val
+            
+            if len(last_skipped) > 1:
+                entropy = Entropy.Conditional._fuzzy(last_skipped, rows) - Entropy.Conditional._fuzzy(atr_col_pairs, rows)
+            else:
+                entropy = Entropy.Mutual.fuzzy(list(atr_col_pairs.keys())[0], list(atr_col_pairs.keys())[1], rows, atr_col_pairs[list(atr_col_pairs.keys())[1]])
+        
+            return entropy
     @staticmethod
     def stability(key_A, key_B, rows, val_A = None, val_B = None):
         """

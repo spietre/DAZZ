@@ -101,9 +101,9 @@ print(f'\tH(B|A21,A1)= {Entropy.Conditional._fuzzy({ Atrs.Cancer: None, Atrs.His
 print(f'\tH(B|A21,A3)= {Entropy.Conditional._fuzzy({ Atrs.Cancer: None, Atrs.History: 0, Atrs.Heredity: None}, data)}') # H(B|A21,A3)= 8.601022207502698
 print(f'\tH(B|A21,A4)= {Entropy.Conditional._fuzzy({ Atrs.Cancer: None, Atrs.History: 0, Atrs.Age: None}, data)}') # H(B|A21,A4)= 8.560939352368301
 ### alebo informacia najvyssia
-print(f'\tI(B;A21,A1)= {Information.Mutual._fuzzy({ Atrs.Cancer: None, Atrs.History: 0, Atrs.Tumor: None}, data)} <--- max') # I(B;A21,A1)= 1.167580294096953
-print(f'\tI(B;A21,A3)= {Information.Mutual._fuzzy({ Atrs.Cancer: None, Atrs.History: 0, Atrs.Heredity: None}, data)}') # I(B;A21,A3)= 0.21929782051256375
-print(f'\tI(B;A21,A4)= {Information.Mutual._fuzzy({ Atrs.Cancer: None, Atrs.History: 0, Atrs.Age: None}, data)}') # I(B;A21,A4)= 0.25938067564696077
+print(f'\tI(B;A21,A1)= {Entropy.Mutual._fuzzy({ Atrs.Cancer: None, Atrs.History: 0, Atrs.Tumor: None}, data)} <--- max') # I(B;A21,A1)= 1.167580294096953
+print(f'\tI(B;A21,A3)= {Entropy.Mutual._fuzzy({ Atrs.Cancer: None, Atrs.History: 0, Atrs.Heredity: None}, data)}') # I(B;A21,A3)= 0.21929782051256375
+print(f'\tI(B;A21,A4)= {Entropy.Mutual._fuzzy({ Atrs.Cancer: None, Atrs.History: 0, Atrs.Age: None}, data)}') # I(B;A21,A4)= 0.25938067564696077
 print()
 
 print('\t\tbranch: B -> A21 -> A11')
@@ -117,8 +117,8 @@ print()
 
 print(f'\t\tH(B|A21,A11,A3)= {Entropy.Conditional._fuzzy({ Atrs.Cancer: None, Atrs.History: 0, Atrs.Tumor: 0, Atrs.Heredity: None}, data)}') # H(B|A21,A11,A3)= 4.541534976741148
 print(f'\t\tH(B|A21,A11,A4)= {Entropy.Conditional._fuzzy({ Atrs.Cancer: None, Atrs.History: 0, Atrs.Tumor: 0, Atrs.Age: None}, data)} <--- min') # H(B|A21,A11,A4)= 4.505771043721003
-print(f'\t\tI(B;A21,A11,A3)= {Information.Mutual._fuzzy({ Atrs.Cancer: None, Atrs.History: 0, Atrs.Tumor: 0, Atrs.Heredity: None}, data)}') # I(B;A21,A11,A3)= 0.1832215328488518
-print(f'\t\tI(B;A21,A11,A4)= {Information.Mutual._fuzzy({ Atrs.Cancer: None, Atrs.History: 0, Atrs.Tumor: 0, Atrs.Age: None}, data)} <--- max') # I(B;A21,A11,A4)= 0.2189854658689967
+print(f'\t\tI(B;A21,A11,A3)= {Entropy.Mutual._fuzzy({ Atrs.Cancer: None, Atrs.History: 0, Atrs.Tumor: 0, Atrs.Heredity: None}, data)}') # I(B;A21,A11,A3)= 0.1832215328488518
+print(f'\t\tI(B;A21,A11,A4)= {Entropy.Mutual._fuzzy({ Atrs.Cancer: None, Atrs.History: 0, Atrs.Tumor: 0, Atrs.Age: None}, data)} <--- max') # I(B;A21,A11,A4)= 0.2189854658689967
 print()
 
 print('\t\t\tbranch: B -> A21 -> A11 -> A41')
@@ -181,9 +181,9 @@ print()
 print(f'\tH(B|A22,A1)= {Entropy.Conditional._fuzzy({ Atrs.Cancer: None, Atrs.History: 1, Atrs.Tumor : None}, data)}') # H(B|A22,A1)= 8.055675659587857
 print(f'\tH(B|A22,A3)= {Entropy.Conditional._fuzzy({ Atrs.Cancer: None, Atrs.History: 1, Atrs.Heredity : None}, data)}') # H(B|A22,A3)= 8.157170811492158
 print(f'\tH(B|A22,A4)= {Entropy.Conditional._fuzzy({ Atrs.Cancer: None, Atrs.History: 1, Atrs.Age : None}, data)} <--- min') # H(B|A22,A4)= 7.081243709953053
-print(f'\tI(B;A22,A1)= {Information.Mutual._fuzzy({ Atrs.Cancer: None, Atrs.History: 1, Atrs.Tumor: None}, data)}') # I(B;A22,A1)= 0.14563492617163654
-print(f'\tI(B;A22,A3)= {Information.Mutual._fuzzy({ Atrs.Cancer: None, Atrs.History: 1, Atrs.Heredity: None}, data)}') # I(B;A22,A3)= 0.04413977426733595
-print(f'\tI(B;A22,A4)= {Information.Mutual._fuzzy({ Atrs.Cancer: None, Atrs.History: 1, Atrs.Age: None}, data)} <--- max') # I(B;A22,A4)= 1.1200668758064403
+print(f'\tI(B;A22,A1)= {Entropy.Mutual._fuzzy({ Atrs.Cancer: None, Atrs.History: 1, Atrs.Tumor: None}, data)}') # I(B;A22,A1)= 0.14563492617163654
+print(f'\tI(B;A22,A3)= {Entropy.Mutual._fuzzy({ Atrs.Cancer: None, Atrs.History: 1, Atrs.Heredity: None}, data)}') # I(B;A22,A3)= 0.04413977426733595
+print(f'\tI(B;A22,A4)= {Entropy.Mutual._fuzzy({ Atrs.Cancer: None, Atrs.History: 1, Atrs.Age: None}, data)} <--- max') # I(B;A22,A4)= 1.1200668758064403
 print()
 
 print('\t\tbranch: B -> A22 -> A41')
@@ -207,8 +207,8 @@ print()
 
 print(f'\t\tH(B|A22,A42,A1)= {Entropy.Conditional._fuzzy({ Atrs.Cancer: None, Atrs.History: 1, Atrs.Age: 1, Atrs.Tumor : None}, data)} <--- min') # H(B|A22,A42,A1)= 4.034641092862546
 print(f'\t\tH(B|A22,A42,A3)= {Entropy.Conditional._fuzzy({ Atrs.Cancer: None, Atrs.History: 1, Atrs.Age: 1, Atrs.Heredity : None}, data)}') # H(B|A22,A42,A3)= 4.40748413555121
-print(f'\t\tI(B;A22,A42,A1)= {Information.Mutual._fuzzy({ Atrs.Cancer: None, Atrs.History: 1, Atrs.Age: 1, Atrs.Tumor: None}, data)} <--- max') # I(B;A22,A42,A1)= 0.46965602868475465
-print(f'\t\tI(B;A22,A42,A3)= {Information.Mutual._fuzzy({ Atrs.Cancer: None, Atrs.History: 1, Atrs.Age: 1, Atrs.Heredity: None}, data)}') # I(B;A22,A42,A3)= 0.09681298599609
+print(f'\t\tI(B;A22,A42,A1)= {Entropy.Mutual._fuzzy({ Atrs.Cancer: None, Atrs.History: 1, Atrs.Age: 1, Atrs.Tumor: None}, data)} <--- max') # I(B;A22,A42,A1)= 0.46965602868475465
+print(f'\t\tI(B;A22,A42,A3)= {Entropy.Mutual._fuzzy({ Atrs.Cancer: None, Atrs.History: 1, Atrs.Age: 1, Atrs.Heredity: None}, data)}') # I(B;A22,A42,A3)= 0.09681298599609
 print()
 
 print('\t\t\tbranch: B -> A22 -> A42 -> A11')
