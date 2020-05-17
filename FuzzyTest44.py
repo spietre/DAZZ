@@ -95,7 +95,7 @@ print()
 ## najlepsie vyslo A3
 #### pocitame vetvu A21 -> A11 -> A31
 print('\t\t\tVetva: B -> A21 -> A11 -> A31------------------')
-print(f'\t\t\tH(B|A21,A11) = {Entropy.Conditional._fuzzy({ A.B : None, A.A2 : 0, A.A1 : 0, A.A3 : 0 }, data)}')
+print(f'\t\t\tH(B|A21,A11,A31) = {Entropy.Conditional._fuzzy({ A.B : None, A.A2 : 0, A.A1 : 0, A.A3 : 0 }, data)}')
 print(f'\t\t\tB1 = {Cardinality.resulting({ A.B : 0, A.A2 : 0, A.A1 : 0, A.A3 : 0 }, data)}')
 print(f'\t\t\tB2 = {Cardinality.resulting({ A.B : 1, A.A2 : 0, A.A1 : 0, A.A3 : 0 }, data)} {gtBeta}')
 print(f'\t\t\tB3 = {Cardinality.resulting({ A.B : 2, A.A2 : 0, A.A1 : 0, A.A3 : 0 }, data)}')
@@ -105,7 +105,7 @@ print()
 
 #### pocitame vetvu A21 -> A11 -> A32
 print('\t\t\tVetva: B -> A21 -> A11 -> A32------------------')
-print(f'\t\t\tH(B|A21,A11) = {Entropy.Conditional._fuzzy({ A.B : None, A.A2 : 0, A.A1 : 0, A.A3 : 1 }, data)}')
+print(f'\t\t\tH(B|A21,A11,A32) = {Entropy.Conditional._fuzzy({ A.B : None, A.A2 : 0, A.A1 : 0, A.A3 : 1 }, data)}')
 print(f'\t\t\tB1 = {Cardinality.resulting({ A.B : 0, A.A2 : 0, A.A1 : 0, A.A3 : 1 }, data)}')
 print(f'\t\t\tB2 = {Cardinality.resulting({ A.B : 1, A.A2 : 0, A.A1 : 0, A.A3 : 1 }, data)}')
 print(f'\t\t\tB3 = {Cardinality.resulting({ A.B : 2, A.A2 : 0, A.A1 : 0, A.A3 : 1 }, data)}')
@@ -167,7 +167,7 @@ print()
 ## najlepsie vyslo A1
 #### pocitame vetvu A22 -> A31 -> A11
 print('\t\t\tVetva: B -> A22 -> A31 -> A11------------------')
-print(f'\t\t\tH(B|A22,A31) = {Entropy.Conditional._fuzzy({ A.B : None, A.A2 : 1, A.A3 : 0, A.A1 : 0 }, data)}')
+print(f'\t\t\tH(B|A22,A31,A11) = {Entropy.Conditional._fuzzy({ A.B : None, A.A2 : 1, A.A3 : 0, A.A1 : 0 }, data)}')
 print(f'\t\t\tB1 = {Cardinality.resulting({ A.B : 0, A.A2 : 1, A.A3 : 0, A.A1 : 0 }, data)}')
 print(f'\t\t\tB2 = {Cardinality.resulting({ A.B : 1, A.A2 : 1, A.A3 : 0, A.A1 : 0 }, data)}')
 print(f'\t\t\tB3 = {Cardinality.resulting({ A.B : 2, A.A2 : 1, A.A3 : 0, A.A1 : 0 }, data)}')
@@ -177,7 +177,7 @@ print()
 
 #### pocitame vetvu A22 -> A31 -> A12
 print('\t\t\tVetva: B -> A22 -> A31 -> A12------------------')
-print(f'\t\t\tH(B|A22,A31) = {Entropy.Conditional._fuzzy({ A.B : None, A.A2 : 1, A.A3 : 0, A.A1 : 1 }, data)}')
+print(f'\t\t\tH(B|A22,A31,A12) = {Entropy.Conditional._fuzzy({ A.B : None, A.A2 : 1, A.A3 : 0, A.A1 : 1 }, data)}')
 print(f'\t\t\tB1 = {Cardinality.resulting({ A.B : 0, A.A2 : 1, A.A3 : 0, A.A1 : 1 }, data)}')
 print(f'\t\t\tB2 = {Cardinality.resulting({ A.B : 1, A.A2 : 1, A.A3 : 0, A.A1 : 1 }, data)}')
 print(f'\t\t\tB3 = {Cardinality.resulting({ A.B : 2, A.A2 : 1, A.A3 : 0, A.A1 : 1 }, data)}')
@@ -231,29 +231,6 @@ print(f'\t\tB3 = {Cardinality.resulting({ A.B : 2, A.A2 : 2, A.A1 : 0 }, data)}'
 print(f'\t\tf = {Cardinality.joint({ A.A2 : 2, A.A1 : 0 }, data) / Cardinality.personal(A.A2, data)} {ltAlfa}')
 #### xxx
 print()
-# print('\t\t#####')
-# print(f'\t\tI(B;A23,A11,A3) = {Entropy.Mutual._fuzzy({ A.B: None, A.A2 : 2, A.A1 : 0, A.A3: None}, data)} {max}')
-# print(f'\t\tI(B;A23,A11,A4) = {Entropy.Mutual._fuzzy({ A.B: None, A.A2 : 2, A.A1 : 0, A.A4: None}, data)}')
-# print(f'\t\tH(B|A23,A11,A3) = {Entropy.Conditional._fuzzy({ A.B : None, A.A2 : 2, A.A1 : 0, A.A3 : None }, data)} {min}')
-# print(f'\t\tH(B|A23,A11,A4) = {Entropy.Conditional._fuzzy({ A.B : None, A.A2 : 2, A.A1 : 0, A.A4 : None }, data)}')
-# print()
-
-# ## najlepsie vyslo A3
-# #### pocitame vetvu A23 -> A11 -> A31
-# print('\t\t\tVetva: B -> A23 -> A11 -> A31------------------')
-# print(f'\t\t\tH(B|A23,A11) = {Entropy.Conditional._fuzzy({ A.B : None, A.A2 : 2, A.A1 : 0, A.A3 : 0 }, data)}')
-# print(f'\t\t\tB1 = {Cardinality.resulting({ A.B : 0, A.A2 : 2, A.A1 : 0, A.A3 : 0 }, data)}')
-# print(f'\t\t\tB2 = {Cardinality.resulting({ A.B : 1, A.A2 : 2, A.A1 : 0, A.A3 : 0 }, data)}')
-# print(f'\t\t\tB3 = {Cardinality.resulting({ A.B : 2, A.A2 : 2, A.A1 : 0, A.A3 : 0 }, data)}')
-# print(f'\t\t\tf = {Cardinality.joint({ A.A2 : 2, A.A1 : 0, A.A3 : 0 }, data) / Cardinality.personal(A.A2, data)}')
-
-# #### pocitame vetvu A23 -> A11 -> A32
-# print('\t\t\tVetva: B -> A23 -> A11 -> A31------------------')
-# print(f'\t\t\tH(B|A23,A11) = {Entropy.Conditional._fuzzy({ A.B : None, A.A2 : 2, A.A1 : 0, A.A3 : 1 }, data)}')
-# print(f'\t\t\tB1 = {Cardinality.resulting({ A.B : 0, A.A2 : 2, A.A1 : 0, A.A3 : 1 }, data)}')
-# print(f'\t\t\tB2 = {Cardinality.resulting({ A.B : 1, A.A2 : 2, A.A1 : 0, A.A3 : 1 }, data)}')
-# print(f'\t\t\tB3 = {Cardinality.resulting({ A.B : 2, A.A2 : 2, A.A1 : 0, A.A3 : 1 }, data)}')
-# print(f'\t\t\tf = {Cardinality.joint({ A.A2 : 2, A.A1 : 0, A.A3 : 1 }, data) / Cardinality.personal(A.A2, data)}')
 
 
 
