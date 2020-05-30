@@ -1,8 +1,8 @@
 from enum import Enum
-from Statistics import Statistics
-from Statistics import Information
-from Statistics import Entropy
-from Statistics import Cardinality
+from Statistics.Statistics import Statistics
+from Statistics.Information import Information
+from Statistics.Entropy import Entropy
+from Statistics.Cardinality import Cardinality
 
 class Atrs:
     Tumor = 0

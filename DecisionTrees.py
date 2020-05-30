@@ -1,4 +1,4 @@
-from Statistics import Entropy
+from Statistics.Entropy import Entropy
 
 header = ['Tumor',  'History',    'Heredity',   'Age',    'Cancer']
 # data = [

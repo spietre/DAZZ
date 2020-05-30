@@ -1,7 +1,7 @@
-from BayesData import Cancer
-from BayesData import ECancer
-from Statistics import Cardinality
-from Statistics import DB
+from Data.BayesData import Cancer
+from Data.BayesData import ECancer
+from Statistics.Cardinality import Cardinality
+from Statistics.Statistics import DB
 
 
 

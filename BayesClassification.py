@@ -1,5 +1,5 @@
 
-from Statistics import Statistics as stat
+from Statistics.Statistics import Statistics as stat
 from statistics import NormalDist
 
 class Bayes:

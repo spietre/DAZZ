@@ -1,6 +1,6 @@
-from Statistics import Cardinality
-from Statistics import DB
-from BreastCancerData import ECancer, data
+from Statistics.Cardinality import Cardinality
+from Statistics.Statistics import DB
+from Data.BreastCancerData import ECancer, data
 
 
 
